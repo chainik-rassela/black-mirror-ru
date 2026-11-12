@@ -2,13 +2,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Автоматическая генерация единого меню
     const navbarContainer = document.getElementById("navbar");
     if (navbarContainer) {
-        const menuItems = [
+            const menuItems = [
             { title: "Главная", url: "index.html" },
             { title: "По-русски", url: "russian-project.html" },
             { title: "Антиутопии", url: "about.html" },
             { title: "Технологии", url: "tech.html" },
             { title: "Цифровой след", url: "privacy.html" },
             { title: "Серии", url: "episodes.html" },
+            { title: "Пасхалки", url: "easter-eggs.html" },
+            { title: "Терминал", url: "terminal.html" },
             { title: "Рейтинг", url: "simulator.html" },
             { title: "Об ИИ", url: "ai.html" }
         ];
