@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (navbarContainer) {
         const menuItems = [
             { title: "Главная", url: "index.html" },
+            { title: "По-русски", url: "russian-project.html" },
             { title: "Антиутопии", url: "about.html" },
             { title: "Технологии", url: "tech.html" },
             { title: "Цифровой след", url: "privacy.html" },
@@ -11,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
             { title: "Рейтинг", url: "simulator.html" },
             { title: "Об ИИ", url: "ai.html" }
         ];
+
 
         const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
