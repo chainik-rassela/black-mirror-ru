@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Секретный терминал // Архив</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .terminal-window {
+            background: #080a0c;
+            border: 1px solid #00e5ff55;
+            border-radius: 12px;
+            padding: 1.8rem;
+            font-family: "Courier New", Courier, monospace;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.12);
+        }
+        .terminal-output {
+            min-height: 180px;
+            color: #00e5ff;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+            font-size: 0.98rem;
+        }
+        .cmd-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .cmd-btn {
+            background: #11161a;
+            border: 1px solid #00e5ff44;
+            color: #00e5ff;
+            padding: 0.65rem 1.1rem;
+            border-radius: 6px;
+            font-family: "Courier New", Courier, monospace;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+        }
+        .cmd-btn:hover {
+            background: #00e5ff;
+            color: #050505;
+        }
+    </style>
+</head>
+<body>
+
+    <header id="navbar"></header>
+
+    <div class="container">
+        <h1 class="page-title">Терминал <span class="highlight">доступа</span></h1>
+        <p class="page-subtitle">Выберите зашифрованный файл из архива системы для расшифровки.</p>
+
+        <div class="terminal-window">
+            <div class="terminal-output" id="term-screen">
+                > СИСТЕМА ГОТОВА К РАБОТЕ.<br>
+                > СТАТУС СОЕДИНЕНИЯ: ЗАШИФРОВАНО.<br>
+                > ВЫБЕРИТЕ СЕКТОР ДАННЫХ НИЖЕ...
+            </div>
+
+            <div class="cmd-buttons">
+                <button class="cmd-btn" onclick="decryptFile('cookie')">[01] ПРОТОКОЛ «КУКИ»</button>
+                <button class="cmd-btn" onclick="decryptFile('1984')">[02] АРХИВ «1984»</button>
+                <button class="cmd-btn" onclick="decryptFile('author')">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
+                <button class="cmd-btn" onclick="decryptFile('wipe')">[04] ОЧИСТИТЬ ЭКРАН</button>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn">← Вернуться на главную</a>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const filesData = {
+            cookie: "> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...<br>> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.<br>> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов.",
+            1984: "> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...<br>> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку.",
+            author: "> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...<br>> АВТОР ПРОЕКТА: Chainik Rassela.<br>> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages.",
+            wipe: "> ЭКРАН ОЧИЩЕН.<br>> ОЖИДАНИЕ НОВОЙ КОМАНДЫ..."
+        };
+
+        function decryptFile(key) {
+            const screen = document.getElementById("term-screen");
+            screen.innerHTML = filesData[key];
+        }
+    </script>
+</body>
+</html>
