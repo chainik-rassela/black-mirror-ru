@@ -17,7 +17,6 @@
             position: relative;
         }
 
-        /* Режим сбоя (Glitch) */
         .terminal-window.glitch-mode {
             border-color: #ff0055;
             box-shadow: 0 0 40px rgba(255, 0, 85, 0.45);
@@ -100,7 +99,6 @@
             word-break: break-word;
         }
 
-        /* Блок ввода пароля внутри терминала */
         .password-box {
             display: none;
             background: #040608;
@@ -180,7 +178,6 @@
             box-shadow: 0 0 15px rgba(255, 208, 0, 0.45);
         }
 
-        /* Классическое всплывающее окно в стиле Windows */
         .win-overlay {
             display: none;
             position: fixed;
@@ -327,3 +324,268 @@
         <p class="page-subtitle">Выберите зашифрованный файл из архива системы для расшифровки.</p>
 
         <div class="terminal-window" id="term-window">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <div>BM-OS v4.19 // SECURE SHELL</div>
+            </div>
+
+            <div class="cmd-line-bar">
+                <span class="cmd-prompt">root@bm-archive:~$</span>
+                <span id="cmd-typed"></span><span class="cmd-cursor"></span>
+            </div>
+
+            <div class="terminal-output" id="term-screen">&gt; СИСТЕМА ГОТОВА К РАБОТЕ.
+&gt; СТАТУС СОЕДИНЕНИЯ: ЗАШИФРОВАНО.
+&gt; ВЫБЕРИТЕ СЕКТОР ДАННЫХ НИЖЕ...</div>
+
+            <div class="password-box" id="password-box">
+                <label for="secret-pass">&gt; ВВЕДИТЕ КОД ДОСТУПА:</label>
+                <input type="password" id="secret-pass" class="password-input" placeholder="******" maxlength="12">
+                <button class="cmd-btn secret" onclick="checkPassword()">ВВОД</button>
+            </div>
+
+            <div class="cmd-buttons">
+                <button class="cmd-btn" onclick="runCommand('cookie')">[01] ПРОТОКОЛ «КУКИ»</button>
+                <button class="cmd-btn" onclick="runCommand('1984')">[02] АРХИВ «1984»</button>
+                <button class="cmd-btn" onclick="runCommand('author')">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
+                <button class="cmd-btn" onclick="runCommand('trace')">[04] ТРАССИРОВКА СЛЕДА</button>
+                <button class="cmd-btn danger" onclick="runCommand('glitch')">[05] СБОЙ МАТРИЦЫ</button>
+                <button class="cmd-btn" onclick="runCommand('symbol')">[06] СИМВОЛ ВЫБОРА</button>
+                <button class="cmd-btn secret" onclick="runCommand('password')">[07] PASSWORD</button>
+                <button class="cmd-btn" onclick="runCommand('wipe')">[08] ОЧИСТИТЬ ЭКРАН</button>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn">← Вернуться на главную</a>
+    </div>
+
+    <div class="win-overlay" id="win-modal" onclick="overlayClose(event)">
+        <div class="win-dialog" id="win-dialog">
+            <div class="win-titlebar" id="win-titlebar">
+                <div class="win-title-left">
+                    <span>⚠</span>
+                    <span>System_Alert.exe — Критический сбой сектора</span>
+                </div>
+                <button class="win-close-btn" onclick="closeWinModal()" title="Закрыть">X</button>
+            </div>
+            <div class="win-body">
+                <div class="win-icon">✕</div>
+                <div class="win-text-block">
+                    <div class="win-main-msg">Упс — эта херня не работает</div>
+                    <div class="win-sub-msg">Soon...</div>
+                </div>
+            </div>
+            <div class="win-footer">
+                <button class="win-ok-btn" onclick="closeWinModal()">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let isTyping = false;
+
+        function getTraceData() {
+            const res = `${window.screen.width}x${window.screen.height}`;
+            const lang = navigator.language || "ru-RU";
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Не определено";
+            const platform = navigator.platform || "Unknown OS";
+            return `> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...
+> РАЗРЕШЕНИЕ ДИСПЛЕЯ: ${res} px
+> ПЛАТФОРМА / СИСТЕМА: ${platform}
+> ЯЗЫКОВОЙ ПАКЕТ: ${lang}
+> ЧАСОВОЙ ПОЯС: ${tz}
+> СТАТУС: Объект идентифицирован. Анонимность — иллюзия.`;
+        }
+
+        const commandsData = {
+            cookie: {
+                cmd: 'decrypt --sector=01 --file="COOKIE_PROTOCOL.DAT"',
+                out: `> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...
+> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.
+> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов.`
+            },
+            1984: {
+                cmd: 'decrypt --sector=02 --file="ORWELL_SYNC.LOG"',
+                out: `> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...
+> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку.`
+            },
+            author: {
+                cmd: 'cat /archive/CREATOR_NOTE.TXT',
+                out: `> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...
+> АВТОР ПРОЕКТА: Chainik Rassela.
+> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages.`
+            },
+            trace: {
+                cmd: 'netstat --trace-user --deep-scan',
+                dynamicOut: getTraceData
+            },
+            glitch: {
+                cmd: 'sudo inject --payload=WHITE_BEAR_OVERRIDE',
+                out: `> ВНИМАНИЕ! ОБНАРУЖЕНО НЕСАНКЦИОНИРОВАННОЕ ВМЕШАТЕЛЬСТВО!
+> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА...
+> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА...`
+            },
+            symbol: {
+                cmd: 'render --glyph="BANDERSNATCH_PATH"',
+                out: `> ЗАГРУЗКА ГРАФИЧЕСКОГО СИМВОЛА ВЫБОРА...
+
+        /\
+       /  \
+      /    \
+     /  /\  \
+    /  /  \  \
+   /__/    \__\
+
+      |    |
+      |    |
+
+> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА.`
+            },
+            password: {
+                cmd: 'auth --sector=CLASSIFIED --prompt-key',
+                out: `> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.
+> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ В ПОЛЕ НИЖЕ ДЛЯ ПОДТВЕРЖДЕНИЯ ЛИЧНОСТИ...`
+            },
+            wipe: {
+                cmd: 'clear && reset --session',
+                out: `> ЭКРАН ОЧИЩЕН.
+> ОЖИДАНИЕ НОВОЙ КОМАНДЫ...`
+            }
+        };
+
+        function setButtonsDisabled(state) {
+            document.querySelectorAll('.cmd-btn').forEach(btn => {
+                btn.disabled = state;
+            });
+        }
+
+        function typeWriter(element, text, speed, callback) {
+            element.textContent = '';
+            let i = 0;
+            const timer = setInterval(() => {
+                element.textContent += text.charAt(i);
+                i++;
+                if (i >= text.length) {
+                    clearInterval(timer);
+                    if (callback) callback();
+                }
+            }, speed);
+        }
+
+        function runCommand(key) {
+            if (isTyping) return;
+            isTyping = true;
+            setButtonsDisabled(true);
+
+            const cmdEl = document.getElementById('cmd-typed');
+            const screenEl = document.getElementById('term-screen');
+            const passBox = document.getElementById('password-box');
+            const termWindow = document.getElementById('term-window');
+
+            if (key !== 'password') {
+                passBox.classList.remove('active');
+            }
+
+            const item = commandsData[key];
+            const outputText = item.dynamicOut ? item.dynamicOut() : item.out;
+
+            typeWriter(cmdEl, item.cmd, 28, () => {
+                setTimeout(() => {
+                    if (key === 'glitch') {
+                        termWindow.classList.add('glitch-mode');
+                        setTimeout(() => {
+                            termWindow.classList.remove('glitch-mode');
+                        }, 2600);
+                    }
+
+                    typeWriter(screenEl, outputText, 14, () => {
+                        isTyping = false;
+                        setButtonsDisabled(false);
+
+                        if (key === 'password') {
+                            passBox.classList.add('active');
+                            const input = document.getElementById('secret-pass');
+                            input.value = '';
+                            input.focus();
+                        }
+                    });
+                }, 250);
+            });
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('secret-pass');
+            const screenEl = document.getElementById('term-screen');
+            const passBox = document.getElementById('password-box');
+            const dialog = document.getElementById('win-dialog');
+            const val = input.value.trim();
+
+            if (val === '111126') {
+                passBox.classList.remove('active');
+                screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.\n> ОТКРЫТИЕ ВНЕШНЕГО ОКНА...';
+                dialog.style.left = '0px';
+                dialog.style.top = '0px';
+                document.getElementById('win-modal').classList.add('open');
+            } else {
+                screenEl.textContent = '> ОШИБКА: НЕВЕРНЫЙ КОД ДОСТУПА.\n> ПОПРОБУЙТЕ СНОВА...';
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function closeWinModal() {
+            document.getElementById('win-modal').classList.remove('open');
+        }
+
+        function overlayClose(e) {
+            if (e.target.id === 'win-modal') {
+                closeWinModal();
+            }
+        }
+
+        document.getElementById('secret-pass').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeWinModal();
+            }
+        });
+
+        (function enableWindowDrag() {
+            const dialog = document.getElementById('win-dialog');
+            const titlebar = document.getElementById('win-titlebar');
+            let isDragging = false;
+            let startX = 0, startY = 0;
+            let origLeft = 0, origTop = 0;
+
+            titlebar.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.win-close-btn')) return;
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                origLeft = parseFloat(dialog.style.left) || 0;
+                origTop = parseFloat(dialog.style.top) || 0;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                dialog.style.left = `${origLeft + dx}px`;
+                dialog.style.top = `${origTop + dy}px`;
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+        })();
+    </script>
+</body>
+</html>
