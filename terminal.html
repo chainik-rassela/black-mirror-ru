@@ -73,17 +73,14 @@
             margin-bottom: 1.2rem;
             font-size: 0.92rem;
             color: #a0f0ff;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            overflow-wrap: break-word;
             word-break: break-word;
+            line-height: 1.5;
         }
 
         .cmd-prompt {
             color: #00e5ff;
             font-weight: bold;
+            margin-right: 0.4rem;
         }
 
         .cmd-cursor {
@@ -93,6 +90,7 @@
             background: #00e5ff;
             animation: blink 0.8s infinite;
             vertical-align: middle;
+            margin-left: 2px;
         }
 
         .terminal-output {
@@ -102,8 +100,8 @@
             line-height: 1.7;
             font-size: 0.96rem;
             white-space: pre-wrap;
-            overflow-wrap: break-word;
             word-wrap: break-word;
+            overflow-wrap: break-word;
             overflow-x: hidden;
             max-width: 100%;
         }
@@ -111,10 +109,9 @@
         .ascii-art {
             display: block;
             white-space: pre;
-            overflow-x: hidden;
             font-family: "Courier New", Courier, monospace;
-            line-height: 1.25;
-            margin: 0.6rem 0;
+            line-height: 1.2;
+            margin: 0.8rem 0;
             color: #00e5ff;
         }
 
@@ -157,6 +154,8 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.75rem;
+            position: relative;
+            z-index: 2;
         }
         .cmd-btn {
             background: #11161a;
@@ -351,8 +350,7 @@
             </div>
 
             <div class="cmd-line-bar">
-                <span class="cmd-prompt">root@bm-archive:~$</span>
-                <span id="cmd-typed"></span><span class="cmd-cursor"></span>
+                <span class="cmd-prompt">root@bm-archive:~$</span><span id="cmd-typed"></span><span class="cmd-cursor"></span>
             </div>
 
             <div class="terminal-output" id="term-screen">&gt; СИСТЕМА ГОТОВА К РАБОТЕ.
@@ -362,286 +360,264 @@
             <div class="password-box" id="password-box">
                 <label for="secret-pass">&gt; ВВЕДИТЕ КОД ДОСТУПА:</label>
                 <input type="password" id="secret-pass" class="password-input" placeholder="******" maxlength="12">
-                <button class="cmd-btn secret" onclick="checkPassword()">ВВОД</button>
+                <button type="button" class="cmd-btn secret" id="btn-submit-pass">ВВОД</button>
             </div>
 
             <div class="cmd-buttons">
-                <button class="cmd-btn" onclick="runCommand('cookie')">[01] ПРОТОКОЛ «КУКИ»</button>
-                <button class="cmd-btn" onclick="runCommand('1984')">[02] АРХИВ «1984»</button>
-                <button class="cmd-btn" onclick="runCommand('author')">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
-                <button class="cmd-btn" onclick="runCommand('trace')">[04] ТРАССИРОВКА / СЛЕД</button>
-                <button class="cmd-btn danger" onclick="runCommand('glitch')">[05] СБОЙ МАТРИЦЫ (GLITCH)</button>
-                <button class="cmd-btn" onclick="runCommand('symbol')">[06] СИМВОЛ ВЫБОРА</button>
-                <button class="cmd-btn secret" onclick="runCommand('password')">[07] PASSWORD</button>
-                <button class="cmd-btn" onclick="runCommand('wipe')">[08] ОЧИСТИТЬ ЭКРАН</button>
+                <button type="button" class="cmd-btn" data-cmd="cookie">[01] ПРОТОКОЛ «КУКИ»</button>
+                <button type="button" class="cmd-btn" data-cmd="1984">[02] АРХИВ «1984»</button>
+                <button type="button" class="cmd-btn" data-cmd="author">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
+                <button type="button" class="cmd-btn" data-cmd="trace">[04] ТРАССИРОВКА СЛЕДА</button>
+                <button type="button" class="cmd-btn danger" data-cmd="glitch">[05] СБОЙ МАТРИЦЫ</button>
+                <button type="button" class="cmd-btn" data-cmd="symbol">[06] СИМВОЛ ВЫБОРА</button>
+                <button type="button" class="cmd-btn secret" data-cmd="password">[07] PASSWORD</button>
+                <button type="button" class="cmd-btn" data-cmd="wipe">[08] ОЧИСТИТЬ ЭКРАН</button>
             </div>
         </div>
 
         <a href="index.html" class="btn">← Вернуться на главную</a>
     </div>
 
-    <div class="win-overlay" id="win-modal" onclick="overlayClose(event)">
+    <div class="win-overlay" id="win-modal">
         <div class="win-dialog" id="win-dialog">
             <div class="win-titlebar" id="win-titlebar">
                 <div class="win-title-left">
                     <span>⚠</span>
                     <span>System_Alert.exe — Критический сбой сектора</span>
                 </div>
-                <button class="win-close-btn" onclick="closeWinModal()" title="Закрыть">X</button>
+                <button type="button" class="win-close-btn" id="btn-win-close" title="Закрыть">X</button>
             </div>
             <div class="win-body">
                 <div class="win-icon">✕</div>
                 <div class="win-text-block">
-                    <div class="win-main-msg">Упс - эта херня не работает</div>
+                    <div class="win-main-msg">Упс — эта херня не работает</div>
                     <div class="win-sub-msg">Soon...</div>
                 </div>
             </div>
             <div class="win-footer">
-                <button class="win-ok-btn" onclick="closeWinModal()">ОК</button>
+                <button type="button" class="win-ok-btn" id="btn-win-ok">ОК</button>
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
     <script>
-        let isTyping = false;
+        (function () {
+            let isTyping = false;
 
-        function getTraceData() {
-            const res = `${window.screen.width}x${window.screen.height}`;
-            const lang = navigator.language || "ru-RU";
-            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Не определено";
-            const platform = navigator.platform || "Unknown OS";
-            return `> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...
-> РАЗРЕШЕНИЕ ДИСПЛЕЯ: ${res} px
-> ПЛАТФОРМА / СИСТЕМА: ${platform}
-> ЯЗЫКОВОЙ ПАКЕТ: ${lang}
-> ЧАСОВОЙ ПОЯС: ${tz}
-> СТАТУС: Объект идентифицирован. Анонимность — иллюзия.`;
-        }
-
-        const commandsData = {
-            cookie: {
-                cmd: 'decrypt --sector=01 --file="COOKIE_PROTOCOL.DAT"',
-                out: `> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...
-> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.
-> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов.`
-            },
-            1984: {
-                cmd: 'decrypt --sector=02 --file="ORWELL_SYNC.LOG"',
-                out: `> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...
-> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку.`
-            },
-            author: {
-                cmd: 'cat /archive/CREATOR_NOTE.TXT',
-                out: `> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...
-> АВТОР ПРОЕКТА: Chainik Rassela.
-> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages.`
-            },
-            trace: {
-                cmd: 'netstat --trace-user --deep-scan',
-                dynamicOut: getTraceData
-            },
-            glitch: {
-                cmd: 'sudo inject --payload=WHITE_BEAR_OVERRIDE',
-                out: `> ВНИМАНИЕ! ОБНАРУЖЕНО НЕСАНКЦИОНИРОВАННОЕ ВМЕШАТЕЛЬСТВО!
-> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА... [ERR_0x884F]
-> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА...`
-            },
-            symbol: {
-                cmd: 'render --glyph="BANDERSNATCH_PATH"',
-                header: '> ЗАГРУЗКА ГРАФИЧЕСКОГО СИМВОЛА ВЫБОРА...
-',
-                ascii: [
-                    '        /\\',
-                    '       /  \\',
-                    '      /    \\',
-                    '     /  /\\  \\',
-                    '    /  /  \\  \\',
-                    '   /__/    \\__\\',
-                    '',
-                    '      |    |',
-                    '      |    |'
-                ].join('\n'),
-                footer: '
-> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА.'
-            },
-            password: {
-                cmd: 'auth --sector=CLASSIFIED --prompt-key',
-                out: `> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.
-> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ В ПОЛЕ НИЖЕ ДЛЯ ПОДТВЕРЖДЕНИЯ ЛИЧНОСТИ...`
-            },
-            wipe: {
-                cmd: 'clear && reset --session',
-                out: `> ЭКРАН ОЧИЩЕН.
-> ОЖИДАНИЕ НОВОЙ КОМАНДЫ...`
-            }
-        };
-
-        function setButtonsDisabled(state) {
-            document.querySelectorAll('.cmd-btn').forEach(btn => {
-                btn.disabled = state;
-            });
-        }
-
-        function typeWriter(element, text, speed, callback) {
-            element.textContent = '';
-            let i = 0;
-            const timer = setInterval(() => {
-                element.textContent += text.charAt(i);
-                i++;
-                if (i >= text.length) {
-                    clearInterval(timer);
-                    if (callback) callback();
-                }
-            }, speed);
-        }
-
-        function appendTypedText(targetNode, text, speed, callback) {
-            let i = 0;
-            const timer = setInterval(() => {
-                targetNode.textContent += text.charAt(i);
-                i++;
-                if (i >= text.length) {
-                    clearInterval(timer);
-                    if (callback) callback();
-                }
-            }, speed);
-        }
-
-        function runCommand(key) {
-            if (isTyping) return;
-            isTyping = true;
-            setButtonsDisabled(true);
-
-            const cmdEl = document.getElementById('cmd-typed');
-            const screenEl = document.getElementById('term-screen');
-            const passBox = document.getElementById('password-box');
-            const termWindow = document.getElementById('term-window');
-
-            if (key !== 'password') {
-                passBox.classList.remove('active');
+            function getTraceData() {
+                const res = window.screen.width + "x" + window.screen.height;
+                const lang = navigator.language || "ru-RU";
+                let tz = "Не определено";
+                try {
+                    tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Не определено";
+                } catch (e) {}
+                const platform = navigator.platform || "Unknown OS";
+                return "> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...
+" +
+                       "> РАЗРЕШЕНИЕ ДИСПЛЕЯ: " + res + " px
+" +
+                       "> ПЛАТФОРМА / СИСТЕМА: " + platform + "
+" +
+                       "> ЯЗЫКОВОЙ ПАКЕТ: " + lang + "
+" +
+                       "> ЧАСОВОЙ ПОЯС: " + tz + "
+" +
+                       "> СТАТУС: Объект идентифицирован. Анонимность — иллюзия.";
             }
 
-            const item = commandsData[key];
+            const symbolAscii = [
+                "        /\",
+                "       /  \",
+                "      /    \",
+                "     /  /\  \",
+                "    /  /  \  \",
+                "   /__/    \__\",
+                "      |    |",
+                "      |    |"
+            ].join("
+");
 
-            typeWriter(cmdEl, item.cmd, 25, () => {
-                setTimeout(() => {
-                    if (key === 'glitch') {
-                        termWindow.classList.add('glitch-mode');
-                        setTimeout(() => {
-                            termWindow.classList.remove('glitch-mode');
-                        }, 2600);
+            const commandsData = {
+                cookie: {
+                    cmd: 'decrypt --sector=01 --file="COOKIE_PROTOCOL.DAT"',
+                    out: "> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...
+" +
+                         "> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.
+" +
+                         "> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов."
+                },
+                1984: {
+                    cmd: 'decrypt --sector=02 --file="ORWELL_SYNC.LOG"',
+                    out: "> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...
+" +
+                         "> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку."
+                },
+                author: {
+                    cmd: 'cat /archive/CREATOR_NOTE.TXT',
+                    out: "> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...
+" +
+                         "> АВТОР ПРОЕКТА: Chainik Rassela.
+" +
+                         "> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages."
+                },
+                trace: {
+                    cmd: 'netstat --trace-user --deep-scan',
+                    dynamicOut: getTraceData
+                },
+                glitch: {
+                    cmd: 'sudo inject --payload=WHITE_BEAR_OVERRIDE',
+                    out: "> ВНИМАНИЕ! ОБНАРУЖЕНО НЕСАНКЦИОНИРОВАННОЕ ВМЕШАТЕЛЬСТВО!
+" +
+                         "> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА... [ERR_0x884F]
+" +
+                         "> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА..."
+                },
+                symbol: {
+                    cmd: 'render --glyph="BANDERSNATCH_PATH"',
+                    isSymbol: true
+                },
+                password: {
+                    cmd: 'auth --sector=CLASSIFIED --prompt-key',
+                    out: "> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.
+" +
+                         "> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ В ПОЛЕ НИЖЕ ДЛЯ ПОДТВЕРЖДЕНИЯ ЛИЧНОСТИ..."
+                },
+                wipe: {
+                    cmd: 'clear && reset --session',
+                    out: "> ЭКРАН ОЧИЩЕН.
+" +
+                         "> ОЖИДАНИЕ НОВОЙ КОМАНДЫ..."
+                }
+            };
+
+            function setButtonsDisabled(state) {
+                document.querySelectorAll('.cmd-btn[data-cmd]').forEach(function (btn) {
+                    btn.disabled = state;
+                });
+            }
+
+            function typeWriter(element, text, speed, callback) {
+                element.textContent = '';
+                let i = 0;
+                const timer = setInterval(function () {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    if (i >= text.length) {
+                        clearInterval(timer);
+                        if (callback) callback();
                     }
+                }, speed);
+            }
 
-                    if (key === 'symbol') {
-                        screenEl.innerHTML = '';
-                        const headSpan = document.createElement('span');
-                        const artDiv = document.createElement('div');
-                        artDiv.className = 'ascii-art';
-                        const footSpan = document.createElement('span');
+            function runCommand(key) {
+                if (isTyping) return;
+                const item = commandsData[key];
+                if (!item) return;
 
-                        screenEl.appendChild(headSpan);
-                        screenEl.appendChild(artDiv);
-                        screenEl.appendChild(footSpan);
+                isTyping = true;
+                setButtonsDisabled(true);
 
-                        appendTypedText(headSpan, item.header, 14, () => {
-                            appendTypedText(artDiv, item.ascii, 12, () => {
-                                appendTypedText(footSpan, item.footer, 14, () => {
-                                    isTyping = false;
-                                    setButtonsDisabled(false);
+                const cmdEl = document.getElementById('cmd-typed');
+                const screenEl = document.getElementById('term-screen');
+                const passBox = document.getElementById('password-box');
+                const termWindow = document.getElementById('term-window');
+
+                if (key !== 'password') {
+                    passBox.classList.remove('active');
+                }
+
+                typeWriter(cmdEl, item.cmd, 25, function () {
+                    setTimeout(function () {
+                        if (key === 'glitch') {
+                            termWindow.classList.add('glitch-mode');
+                            setTimeout(function () {
+                                termWindow.classList.remove('glitch-mode');
+                            }, 2600);
+                        }
+
+                        if (item.isSymbol) {
+                            screenEl.innerHTML = '';
+                            const headerSpan = document.createElement('div');
+                            const preEl = document.createElement('pre');
+                            preEl.className = 'ascii-art';
+                            const footerSpan = document.createElement('div');
+
+                            screenEl.appendChild(headerSpan);
+                            screenEl.appendChild(preEl);
+                            screenEl.appendChild(footerSpan);
+
+                            typeWriter(headerSpan, '> ЗАГРУЗКА ГРАФИЧЕСКОГО СИМВОЛА ВЫБОРА...', 14, function () {
+                                typeWriter(preEl, symbolAscii, 10, function () {
+                                    typeWriter(footerSpan, '> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА.', 14, function () {
+                                        isTyping = false;
+                                        setButtonsDisabled(false);
+                                    });
                                 });
                             });
-                        });
-                        return;
-                    }
-
-                    const outputText = item.dynamicOut ? item.dynamicOut() : item.out;
-
-                    typeWriter(screenEl, outputText, 14, () => {
-                        isTyping = false;
-                        setButtonsDisabled(false);
-
-                        if (key === 'password') {
-                            passBox.classList.add('active');
-                            const input = document.getElementById('secret-pass');
-                            input.value = '';
-                            input.focus();
+                            return;
                         }
-                    });
-                }, 220);
-            });
-        }
 
-        function checkPassword() {
-            const input = document.getElementById('secret-pass');
-            const screenEl = document.getElementById('term-screen');
-            const passBox = document.getElementById('password-box');
-            const dialog = document.getElementById('win-dialog');
-            const val = input.value.trim();
+                        const outputText = item.dynamicOut ? item.dynamicOut() : item.out;
+                        typeWriter(screenEl, outputText, 12, function () {
+                            isTyping = false;
+                            setButtonsDisabled(false);
 
-            if (val === '111126') {
-                passBox.classList.remove('active');
-                screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.\n> ОТКРЫТИЕ ВНЕШНЕГО ОКНА...';
-                dialog.style.left = '0px';
-                dialog.style.top = '0px';
-                document.getElementById('win-modal').classList.add('open');
-            } else {
-                screenEl.textContent = '> ОШИБКА: НЕВЕРНЫЙ КОД ДОСТУПА [ACCESS DENIED].\n> ПОПРОБУЙТЕ СНОВА...';
-                input.value = '';
-                input.focus();
+                            if (key === 'password') {
+                                passBox.classList.add('active');
+                                const input = document.getElementById('secret-pass');
+                                input.value = '';
+                                input.focus();
+                            }
+                        });
+                    }, 220);
+                });
             }
-        }
 
-        function closeWinModal() {
-            document.getElementById('win-modal').classList.remove('open');
-        }
+            function checkPassword() {
+                const input = document.getElementById('secret-pass');
+                const screenEl = document.getElementById('term-screen');
+                const passBox = document.getElementById('password-box');
+                const dialog = document.getElementById('win-dialog');
+                const val = input.value.trim();
 
-        function overlayClose(e) {
-            if (e.target.id === 'win-modal') {
-                closeWinModal();
+                if (val === '111126') {
+                    passBox.classList.remove('active');
+                    screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.
+> ОТКРЫТИЕ ВНЕШНЕГО ОКНА...';
+                    dialog.style.left = '0px';
+                    dialog.style.top = '0px';
+                    document.getElementById('win-modal').classList.add('open');
+                } else {
+                    screenEl.textContent = '> ОШИБКА: НЕВЕРНЫЙ КОД ДОСТУПА [ACCESS DENIED].
+> ПОПРОБУЙТЕ СНОВА...';
+                    input.value = '';
+                    input.focus();
+                }
             }
-        }
 
-        document.getElementById('secret-pass').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                checkPassword();
+            function closeWinModal() {
+                document.getElementById('win-modal').classList.remove('open');
             }
-        });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeWinModal();
-            }
-        });
-
-        (function enableWindowDrag() {
-            const dialog = document.getElementById('win-dialog');
-            const titlebar = document.getElementById('win-titlebar');
-            let isDragging = false;
-            let startX = 0, startY = 0;
-            let origLeft = 0, origTop = 0;
-
-            titlebar.addEventListener('mousedown', (e) => {
-                if (e.target.closest('.win-close-btn')) return;
-                isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                origLeft = parseFloat(dialog.style.left) || 0;
-                origTop = parseFloat(dialog.style.top) || 0;
+            // Навешиваем обработчики через addEventListener (надёжно и без сбоев)
+            document.querySelectorAll('.cmd-btn[data-cmd]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    runCommand(btn.getAttribute('data-cmd'));
+                });
             });
 
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-                dialog.style.left = `${origLeft + dx}px`;
-                dialog.style.top = `${origTop + dy}px`;
+            document.getElementById('btn-submit-pass').addEventListener('click', checkPassword);
+            document.getElementById('btn-win-close').addEventListener('click', closeWinModal);
+            document.getElementById('btn-win-ok').addEventListener('click', closeWinModal);
+
+            document.getElementById('win-modal').addEventListener('click', function (e) {
+                if (e.target.id === 'win-modal') {
+                    closeWinModal();
+                }
             });
 
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-        })();
-    </script>
-</body>
-</html>
+            document.getElementById('secret-pass').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    c
