@@ -13,33 +13,297 @@
             padding: 1.8rem;
             font-family: "Courier New", Courier, monospace;
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.12);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
+
+        /* Режим сбоя (Glitch) */
+        .terminal-window.glitch-mode {
+            border-color: #ff0055;
+            box-shadow: 0 0 40px rgba(255, 0, 85, 0.45);
+            animation: term-shake 0.35s infinite;
+        }
+        .terminal-window.glitch-mode .terminal-output,
+        .terminal-window.glitch-mode .cmd-prompt {
+            color: #ff0055;
+            text-shadow: 2px 0 #00e5ff, -2px 0 #ff0055;
+        }
+
+        @keyframes term-shake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -1px); }
+            75% { transform: translate(-1px, -2px); }
+            100% { transform: translate(1px, 1px); }
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1a242b;
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.2rem;
+            font-size: 0.8rem;
+            color: #667;
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .terminal-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #222;
+        }
+        .terminal-dots span:nth-child(1) { background: #ff5f56; }
+        .terminal-dots span:nth-child(2) { background: #ffbd2e; }
+        .terminal-dots span:nth-child(3) { background: #27c93f; }
+
+        .cmd-line-bar {
+            background: #040608;
+            border: 1px solid #162026;
+            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1.2rem;
+            font-size: 0.92rem;
+            color: #a0f0ff;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .cmd-prompt {
+            color: #00e5ff;
+            font-weight: bold;
+        }
+
+        .cmd-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.1em;
+            background: #00e5ff;
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+        }
+
         .terminal-output {
-            min-height: 180px;
+            min-height: 210px;
             color: #00e5ff;
             margin-bottom: 1.5rem;
             line-height: 1.7;
-            font-size: 0.98rem;
+            font-size: 0.96rem;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
+
+        /* Блок ввода пароля внутри терминала */
+        .password-box {
+            display: none;
+            background: #040608;
+            border: 1px dashed #00e5ff77;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .password-box.active {
+            display: flex;
+        }
+        .password-box label {
+            color: #00e5ff;
+            font-size: 0.9rem;
+        }
+        .password-input {
+            background: #0d1217;
+            border: 1px solid #00e5ff55;
+            color: #00e5ff;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.95rem;
+            outline: none;
+            width: 140px;
+            letter-spacing: 2px;
+        }
+        .password-input:focus {
+            border-color: #00e5ff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+
         .cmd-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.8rem;
+            gap: 0.75rem;
         }
         .cmd-btn {
             background: #11161a;
             border: 1px solid #00e5ff44;
             color: #00e5ff;
-            padding: 0.65rem 1.1rem;
+            padding: 0.65rem 1rem;
             border-radius: 6px;
             font-family: "Courier New", Courier, monospace;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             transition: all 0.25s ease;
         }
-        .cmd-btn:hover {
+        .cmd-btn:hover:not(:disabled) {
             background: #00e5ff;
             color: #050505;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+        .cmd-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .cmd-btn.danger {
+            border-color: #ff005566;
+            color: #ff4d88;
+        }
+        .cmd-btn.danger:hover:not(:disabled) {
+            background: #ff0055;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+        }
+        .cmd-btn.secret {
+            border-color: #ffd00066;
+            color: #ffd000;
+        }
+        .cmd-btn.secret:hover:not(:disabled) {
+            background: #ffd000;
+            color: #050505;
+            box-shadow: 0 0 15px rgba(255, 208, 0, 0.45);
+        }
+
+        /* Классическое всплывающее окно в стиле Windows */
+        .win-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(3px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .win-overlay.open {
+            display: flex;
+        }
+        .win-dialog {
+            width: 100%;
+            max-width: 420px;
+            background: #c0c0c0;
+            color: #000;
+            font-family: "Tahoma", "Segoe UI", Arial, sans-serif;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #404040;
+            border-bottom: 2px solid #404040;
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 229, 255, 0.25);
+            animation: win-pop 0.18s ease-out;
+        }
+        @keyframes win-pop {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .win-titlebar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: #fff;
+            padding: 4px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            user-select: none;
+        }
+        .win-close-btn {
+            background: #c0c0c0;
+            color: #000;
+            border-top: 1px solid #fff;
+            border-left: 1px solid #fff;
+            border-right: 1px solid #404040;
+            border-bottom: 1px solid #404040;
+            width: 20px;
+            height: 18px;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 14px;
+            text-align: center;
+            cursor: pointer;
+            padding: 0;
+        }
+        .win-close-btn:active {
+            border-top: 1px solid #404040;
+            border-left: 1px solid #404040;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+        }
+        .win-body {
+            padding: 1.4rem 1.2rem 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .win-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 50%;
+            background: #d90000;
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #800000;
+            box-shadow: 1px 1px 0 #fff;
+        }
+        .win-text-block {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+        .win-main-msg {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111;
+        }
+        .win-sub-msg {
+            font-size: 0.85rem;
+            color: #444;
+            font-style: italic;
+        }
+        .win-footer {
+            padding: 0.5rem 1.2rem 1.1rem;
+            display: flex;
+            justify-content: center;
+        }
+        .win-ok-btn {
+            background: #c0c0c0;
+            color: #000;
+            padding: 4px 28px;
+            font-family: "Tahoma", "Segoe UI", Arial, sans-serif;
+            font-size: 0.88rem;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #404040;
+            border-bottom: 2px solid #404040;
+            cursor: pointer;
+        }
+        .win-ok-btn:active {
+            border-top: 2px solid #404040;
+            border-left: 2px solid #404040;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
         }
     </style>
 </head>
@@ -51,37 +315,12 @@
         <h1 class="page-title">Терминал <span class="highlight">доступа</span></h1>
         <p class="page-subtitle">Выберите зашифрованный файл из архива системы для расшифровки.</p>
 
-        <div class="terminal-window">
-            <div class="terminal-output" id="term-screen">
-                > СИСТЕМА ГОТОВА К РАБОТЕ.<br>
-                > СТАТУС СОЕДИНЕНИЯ: ЗАШИФРОВАНО.<br>
-                > ВЫБЕРИТЕ СЕКТОР ДАННЫХ НИЖЕ...
+        <div class="terminal-window" id="term-window">
+            <div class="terminal-header">
+                <div class="terminal-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <div>BM-OS v4.19 // SECURE SHELL</div>
             </div>
 
-            <div class="cmd-buttons">
-                <button class="cmd-btn" onclick="decryptFile('cookie')">[01] ПРОТОКОЛ «КУКИ»</button>
-                <button class="cmd-btn" onclick="decryptFile('1984')">[02] АРХИВ «1984»</button>
-                <button class="cmd-btn" onclick="decryptFile('author')">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
-                <button class="cmd-btn" onclick="decryptFile('wipe')">[04] ОЧИСТИТЬ ЭКРАН</button>
-            </div>
-        </div>
 
-        <a href="index.html" class="btn">← Вернуться на главную</a>
-    </div>
-
-    <script src="script.js"></script>
-    <script>
-        const filesData = {
-            cookie: "> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...<br>> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.<br>> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов.",
-            1984: "> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...<br>> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку.",
-            author: "> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...<br>> АВТОР ПРОЕКТА: Chainik Rassela.<br>> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages.",
-            wipe: "> ЭКРАН ОЧИЩЕН.<br>> ОЖИДАНИЕ НОВОЙ КОМАНДЫ..."
-        };
-
-        function decryptFile(key) {
-            const screen = document.getElementById("term-screen");
-            screen.innerHTML = filesData[key];
-        }
-    </script>
-</body>
-</html>
