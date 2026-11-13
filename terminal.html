@@ -104,7 +104,7 @@
         .password-box {
             display: none;
             background: #040608;
-            border: 1px dashed #00e5ff77;
+            border: 1px dashed #ffd00077;
             border-radius: 8px;
             padding: 1rem;
             margin-bottom: 1.5rem;
@@ -116,24 +116,24 @@
             display: flex;
         }
         .password-box label {
-            color: #00e5ff;
+            color: #ffd000;
             font-size: 0.9rem;
         }
         .password-input {
             background: #0d1217;
-            border: 1px solid #00e5ff55;
-            color: #00e5ff;
+            border: 1px solid #ffd00066;
+            color: #ffd000;
             padding: 0.5rem 0.8rem;
             border-radius: 4px;
             font-family: "Courier New", Courier, monospace;
             font-size: 0.95rem;
             outline: none;
-            width: 140px;
+            width: 150px;
             letter-spacing: 2px;
         }
         .password-input:focus {
-            border-color: #00e5ff;
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+            border-color: #ffd000;
+            box-shadow: 0 0 10px rgba(255, 208, 0, 0.3);
         }
 
         .cmd-buttons {
@@ -196,6 +196,7 @@
             display: flex;
         }
         .win-dialog {
+            position: relative;
             width: 100%;
             max-width: 420px;
             background: #c0c0c0;
@@ -215,7 +216,7 @@
         .win-titlebar {
             background: linear-gradient(90deg, #000080, #1084d0);
             color: #fff;
-            padding: 4px 6px;
+            padding: 5px 7px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -223,6 +224,15 @@
             font-size: 0.85rem;
             letter-spacing: 0.3px;
             user-select: none;
+            cursor: grab;
+        }
+        .win-titlebar:active {
+            cursor: grabbing;
+        }
+        .win-title-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .win-close-btn {
             background: #c0c0c0;
@@ -266,6 +276,7 @@
             justify-content: center;
             border: 2px solid #800000;
             box-shadow: 1px 1px 0 #fff;
+            user-select: none;
         }
         .win-text-block {
             display: flex;
@@ -316,11 +327,3 @@
         <p class="page-subtitle">Выберите зашифрованный файл из архива системы для расшифровки.</p>
 
         <div class="terminal-window" id="term-window">
-            <div class="terminal-header">
-                <div class="terminal-dots">
-                    <span></span><span></span><span></span>
-                </div>
-                <div>BM-OS v4.19 // SECURE SHELL</div>
-            </div>
-
-
