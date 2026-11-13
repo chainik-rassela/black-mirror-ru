@@ -6,6 +6,9 @@
     <title>Секретный терминал // Архив</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        .container {
+            padding-top: 7.5rem;
+        }
         .terminal-window {
             background: #080a0c;
             border: 1px solid #00e5ff55;
@@ -15,6 +18,7 @@
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.12);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
             position: relative;
+            overflow: hidden;
         }
 
         .terminal-window.glitch-mode {
@@ -73,6 +77,8 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 0.5rem;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .cmd-prompt {
@@ -93,10 +99,23 @@
             min-height: 210px;
             color: #00e5ff;
             margin-bottom: 1.5rem;
-            line-height: 1.45;
+            line-height: 1.7;
             font-size: 0.96rem;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            overflow-x: hidden;
+            max-width: 100%;
+        }
+
+        .ascii-art {
+            display: block;
             white-space: pre;
-            overflow-x: auto;
+            overflow-x: hidden;
+            font-family: "Courier New", Courier, monospace;
+            line-height: 1.25;
+            margin: 0.6rem 0;
+            color: #00e5ff;
         }
 
         .password-box {
@@ -350,8 +369,8 @@
                 <button class="cmd-btn" onclick="runCommand('cookie')">[01] ПРОТОКОЛ «КУКИ»</button>
                 <button class="cmd-btn" onclick="runCommand('1984')">[02] АРХИВ «1984»</button>
                 <button class="cmd-btn" onclick="runCommand('author')">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
-                <button class="cmd-btn" onclick="runCommand('trace')">[04] ТРАССИРОВКА СЛЕДА</button>
-                <button class="cmd-btn danger" onclick="runCommand('glitch')">[05] СБОЙ МАТРИЦЫ</button>
+                <button class="cmd-btn" onclick="runCommand('trace')">[04] ТРАССИРОВКА / СЛЕД</button>
+                <button class="cmd-btn danger" onclick="runCommand('glitch')">[05] СБОЙ МАТРИЦЫ (GLITCH)</button>
                 <button class="cmd-btn" onclick="runCommand('symbol')">[06] СИМВОЛ ВЫБОРА</button>
                 <button class="cmd-btn secret" onclick="runCommand('password')">[07] PASSWORD</button>
                 <button class="cmd-btn" onclick="runCommand('wipe')">[08] ОЧИСТИТЬ ЭКРАН</button>
@@ -373,7 +392,7 @@
             <div class="win-body">
                 <div class="win-icon">✕</div>
                 <div class="win-text-block">
-                    <div class="win-main-msg">Упс — эта херня не работает</div>
+                    <div class="win-main-msg">Упс - эта херня не работает</div>
                     <div class="win-sub-msg">Soon...</div>
                 </div>
             </div>
@@ -392,39 +411,31 @@
             const lang = navigator.language || "ru-RU";
             const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Не определено";
             const platform = navigator.platform || "Unknown OS";
-            return [
-                "> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...",
-                `> РАЗРЕШЕНИЕ ДИСПЛЕЯ: ${res} px`,
-                `> ПЛАТФОРМА / СИСТЕМА: ${platform}`,
-                `> ЯЗЫКОВОЙ ПАКЕТ: ${lang}`,
-                `> ЧАСОВОЙ ПОЯС: ${tz}`,
-                "> СТАТУС: Объект идентифицирован. Анонимность — иллюзия."
-            ].join("\n");
+            return `> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...
+> РАЗРЕШЕНИЕ ДИСПЛЕЯ: ${res} px
+> ПЛАТФОРМА / СИСТЕМА: ${platform}
+> ЯЗЫКОВОЙ ПАКЕТ: ${lang}
+> ЧАСОВОЙ ПОЯС: ${tz}
+> СТАТУС: Объект идентифицирован. Анонимность — иллюзия.`;
         }
 
         const commandsData = {
             cookie: {
                 cmd: 'decrypt --sector=01 --file="COOKIE_PROTOCOL.DAT"',
-                out: [
-                    "> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...",
-                    "> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.",
-                    "> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов."
-                ].join("\n")
+                out: `> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...
+> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.
+> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов.`
             },
             1984: {
                 cmd: 'decrypt --sector=02 --file="ORWELL_SYNC.LOG"',
-                out: [
-                    "> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...",
-                    "> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку."
-                ].join("\n")
+                out: `> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...
+> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку.`
             },
             author: {
                 cmd: 'cat /archive/CREATOR_NOTE.TXT',
-                out: [
-                    "> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...",
-                    "> АВТОР ПРОЕКТА: Chainik Rassela.",
-                    "> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages."
-                ].join("\n")
+                out: `> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...
+> АВТОР ПРОЕКТА: Chainik Rassela.
+> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages.`
             },
             trace: {
                 cmd: 'netstat --trace-user --deep-scan',
@@ -432,43 +443,37 @@
             },
             glitch: {
                 cmd: 'sudo inject --payload=WHITE_BEAR_OVERRIDE',
-                out: [
-                    "> ВНИМАНИЕ! ОБНАРУЖЕНО НЕСАНКЦИОНИРОВАННОЕ ВМЕШАТЕЛЬСТВО!",
-                    "> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА... [ERR_0x884F]",
-                    "> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА..."
-                ].join("\n")
+                out: `> ВНИМАНИЕ! ОБНАРУЖЕНО НЕСАНКЦИОНИРОВАННОЕ ВМЕШАТЕЛЬСТВО!
+> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА... [ERR_0x884F]
+> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА...`
             },
             symbol: {
                 cmd: 'render --glyph="BANDERSNATCH_PATH"',
-                out: [
-                    "> ЗАГРУЗКА ГРАФИЧЕСКОГО СИМВОЛА ВЫБОРА...",
-                    "",
-                    "        /\\",
-                    "       /  \\",
-                    "      /    \\",
-                    "     /  /\\  \\",
-                    "    /  /  \\  \\",
-                    "   /__/    \\__\\",
-                    "",
-                    "      |    |",
-                    "      |    |",
-                    "",
-                    "> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА."
-                ].join("\n")
+                header: '> ЗАГРУЗКА ГРАФИЧЕСКОГО СИМВОЛА ВЫБОРА...
+',
+                ascii: [
+                    '        /\\',
+                    '       /  \\',
+                    '      /    \\',
+                    '     /  /\\  \\',
+                    '    /  /  \\  \\',
+                    '   /__/    \\__\\',
+                    '',
+                    '      |    |',
+                    '      |    |'
+                ].join('\n'),
+                footer: '
+> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА.'
             },
             password: {
                 cmd: 'auth --sector=CLASSIFIED --prompt-key',
-                out: [
-                    "> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.",
-                    "> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ В ПОЛЕ НИЖЕ ДЛЯ ПОДТВЕРЖДЕНИЯ ЛИЧНОСТИ..."
-                ].join("\n")
+                out: `> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.
+> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ В ПОЛЕ НИЖЕ ДЛЯ ПОДТВЕРЖДЕНИЯ ЛИЧНОСТИ...`
             },
             wipe: {
                 cmd: 'clear && reset --session',
-                out: [
-                    "> ЭКРАН ОЧИЩЕН.",
-                    "> ОЖИДАНИЕ НОВОЙ КОМАНДЫ..."
-                ].join("\n")
+                out: `> ЭКРАН ОЧИЩЕН.
+> ОЖИДАНИЕ НОВОЙ КОМАНДЫ...`
             }
         };
 
@@ -483,6 +488,18 @@
             let i = 0;
             const timer = setInterval(() => {
                 element.textContent += text.charAt(i);
+                i++;
+                if (i >= text.length) {
+                    clearInterval(timer);
+                    if (callback) callback();
+                }
+            }, speed);
+        }
+
+        function appendTypedText(targetNode, text, speed, callback) {
+            let i = 0;
+            const timer = setInterval(() => {
+                targetNode.textContent += text.charAt(i);
                 i++;
                 if (i >= text.length) {
                     clearInterval(timer);
@@ -506,9 +523,8 @@
             }
 
             const item = commandsData[key];
-            const outputText = item.dynamicOut ? item.dynamicOut() : item.out;
 
-            typeWriter(cmdEl, item.cmd, 28, () => {
+            typeWriter(cmdEl, item.cmd, 25, () => {
                 setTimeout(() => {
                     if (key === 'glitch') {
                         termWindow.classList.add('glitch-mode');
@@ -517,7 +533,31 @@
                         }, 2600);
                     }
 
-                    typeWriter(screenEl, outputText, 12, () => {
+                    if (key === 'symbol') {
+                        screenEl.innerHTML = '';
+                        const headSpan = document.createElement('span');
+                        const artDiv = document.createElement('div');
+                        artDiv.className = 'ascii-art';
+                        const footSpan = document.createElement('span');
+
+                        screenEl.appendChild(headSpan);
+                        screenEl.appendChild(artDiv);
+                        screenEl.appendChild(footSpan);
+
+                        appendTypedText(headSpan, item.header, 14, () => {
+                            appendTypedText(artDiv, item.ascii, 12, () => {
+                                appendTypedText(footSpan, item.footer, 14, () => {
+                                    isTyping = false;
+                                    setButtonsDisabled(false);
+                                });
+                            });
+                        });
+                        return;
+                    }
+
+                    const outputText = item.dynamicOut ? item.dynamicOut() : item.out;
+
+                    typeWriter(screenEl, outputText, 14, () => {
                         isTyping = false;
                         setButtonsDisabled(false);
 
@@ -528,7 +568,7 @@
                             input.focus();
                         }
                     });
-                }, 250);
+                }, 220);
             });
         }
 
