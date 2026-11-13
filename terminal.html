@@ -18,9 +18,7 @@
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.12);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            overflow: hidden;
         }
-
         .terminal-window.glitch-mode {
             border-color: #ff0055;
             box-shadow: 0 0 40px rgba(255, 0, 85, 0.45);
@@ -31,7 +29,6 @@
             color: #ff0055;
             text-shadow: 2px 0 #00e5ff, -2px 0 #ff0055;
         }
-
         @keyframes term-shake {
             0% { transform: translate(0, 0); }
             25% { transform: translate(-2px, 2px); }
@@ -39,7 +36,6 @@
             75% { transform: translate(-1px, -2px); }
             100% { transform: translate(1px, 1px); }
         }
-
         .terminal-header {
             display: flex;
             justify-content: space-between;
@@ -50,7 +46,6 @@
             font-size: 0.8rem;
             color: #667;
         }
-
         .terminal-dots {
             display: flex;
             gap: 6px;
@@ -73,16 +68,15 @@
             margin-bottom: 1.2rem;
             font-size: 0.92rem;
             color: #a0f0ff;
-            word-break: break-word;
-            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
-
         .cmd-prompt {
             color: #00e5ff;
             font-weight: bold;
-            margin-right: 0.4rem;
         }
-
         .cmd-cursor {
             display: inline-block;
             width: 8px;
@@ -90,9 +84,7 @@
             background: #00e5ff;
             animation: blink 0.8s infinite;
             vertical-align: middle;
-            margin-left: 2px;
         }
-
         .terminal-output {
             min-height: 210px;
             color: #00e5ff;
@@ -100,19 +92,16 @@
             line-height: 1.7;
             font-size: 0.96rem;
             white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
+            word-break: break-word;
             overflow-x: hidden;
-            max-width: 100%;
         }
-
-        .ascii-art {
-            display: block;
+        .ascii-art-box {
             white-space: pre;
             font-family: "Courier New", Courier, monospace;
-            line-height: 1.2;
-            margin: 0.8rem 0;
+            line-height: 1.25;
+            margin: 0.6rem 0;
             color: #00e5ff;
+            overflow-x: auto;
         }
 
         .password-box {
@@ -155,7 +144,7 @@
             flex-wrap: wrap;
             gap: 0.75rem;
             position: relative;
-            z-index: 2;
+            z-index: 5;
         }
         .cmd-btn {
             background: #11161a;
@@ -196,13 +185,14 @@
             box-shadow: 0 0 15px rgba(255, 208, 0, 0.45);
         }
 
+        /* Окно в стиле Windows */
         .win-overlay {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(0, 0, 0, 0.72);
             backdrop-filter: blur(3px);
-            z-index: 999;
+            z-index: 9999;
             align-items: center;
             justify-content: center;
             padding: 1rem;
@@ -222,11 +212,6 @@
             border-right: 2px solid #404040;
             border-bottom: 2px solid #404040;
             box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 229, 255, 0.25);
-            animation: win-pop 0.18s ease-out;
-        }
-        @keyframes win-pop {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
         .win-titlebar {
             background: linear-gradient(90deg, #000080, #1084d0);
@@ -237,7 +222,6 @@
             align-items: center;
             font-weight: bold;
             font-size: 0.85rem;
-            letter-spacing: 0.3px;
             user-select: none;
             cursor: grab;
         }
@@ -264,12 +248,6 @@
             text-align: center;
             cursor: pointer;
             padding: 0;
-        }
-        .win-close-btn:active {
-            border-top: 1px solid #404040;
-            border-left: 1px solid #404040;
-            border-right: 1px solid #fff;
-            border-bottom: 1px solid #fff;
         }
         .win-body {
             padding: 1.4rem 1.2rem 1rem;
@@ -325,12 +303,6 @@
             border-bottom: 2px solid #404040;
             cursor: pointer;
         }
-        .win-ok-btn:active {
-            border-top: 2px solid #404040;
-            border-left: 2px solid #404040;
-            border-right: 2px solid #fff;
-            border-bottom: 2px solid #fff;
-        }
     </style>
 </head>
 <body>
@@ -350,7 +322,8 @@
             </div>
 
             <div class="cmd-line-bar">
-                <span class="cmd-prompt">root@bm-archive:~$</span><span id="cmd-typed"></span><span class="cmd-cursor"></span>
+                <span class="cmd-prompt">root@bm-archive:~$</span>
+                <span id="cmd-typed"></span><span class="cmd-cursor"></span>
             </div>
 
             <div class="terminal-output" id="term-screen">&gt; СИСТЕМА ГОТОВА К РАБОТЕ.
@@ -360,10 +333,10 @@
             <div class="password-box" id="password-box">
                 <label for="secret-pass">&gt; ВВЕДИТЕ КОД ДОСТУПА:</label>
                 <input type="password" id="secret-pass" class="password-input" placeholder="******" maxlength="12">
-                <button type="button" class="cmd-btn secret" id="btn-submit-pass">ВВОД</button>
+                <button type="button" class="cmd-btn secret" id="pass-submit-btn">ВВОД</button>
             </div>
 
-            <div class="cmd-buttons">
+            <div class="cmd-buttons" id="cmd-buttons-panel">
                 <button type="button" class="cmd-btn" data-cmd="cookie">[01] ПРОТОКОЛ «КУКИ»</button>
                 <button type="button" class="cmd-btn" data-cmd="1984">[02] АРХИВ «1984»</button>
                 <button type="button" class="cmd-btn" data-cmd="author">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
@@ -385,7 +358,7 @@
                     <span>⚠</span>
                     <span>System_Alert.exe — Критический сбой сектора</span>
                 </div>
-                <button type="button" class="win-close-btn" id="btn-win-close" title="Закрыть">X</button>
+                <button type="button" class="win-close-btn" id="win-close-x" title="Закрыть">X</button>
             </div>
             <div class="win-body">
                 <div class="win-icon">✕</div>
@@ -395,14 +368,13 @@
                 </div>
             </div>
             <div class="win-footer">
-                <button type="button" class="win-ok-btn" id="btn-win-ok">ОК</button>
+                <button type="button" class="win-ok-btn" id="win-close-ok">ОК</button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
     <script>
-        (function () {
+        (function() {
             let isTyping = false;
 
             function getTraceData() {
@@ -413,53 +385,37 @@
                     tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "Не определено";
                 } catch (e) {}
                 const platform = navigator.platform || "Unknown OS";
-                return "> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...
-" +
-                       "> РАЗРЕШЕНИЕ ДИСПЛЕЯ: " + res + " px
-" +
-                       "> ПЛАТФОРМА / СИСТЕМА: " + platform + "
-" +
-                       "> ЯЗЫКОВОЙ ПАКЕТ: " + lang + "
-" +
-                       "> ЧАСОВОЙ ПОЯС: " + tz + "
-" +
+                return "> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...\n" +
+                       "> РАЗРЕШЕНИЕ ДИСПЛЕЯ: " + res + " px\n" +
+                       "> ПЛАТФОРМА / СИСТЕМА: " + platform + "\n" +
+                       "> ЯЗЫКОВОЙ ПАКЕТ: " + lang + "\n" +
+                       "> ЧАСОВОЙ ПОЯС: " + tz + "\n" +
                        "> СТАТУС: Объект идентифицирован. Анонимность — иллюзия.";
             }
 
-            const symbolAscii = [
-                "        /\",
-                "       /  \",
-                "      /    \",
-                "     /  /\  \",
-                "    /  /  \  \",
-                "   /__/    \__\",
+            const symbolArt = [
+                "        /\\",
+                "       /  \\",
+                "      /    \\",
+                "     /  /\\  \\",
+                "    /  /  \\  \\",
+                "   /__/    \\__\\",
                 "      |    |",
                 "      |    |"
-            ].join("
-");
+            ].join("\n");
 
             const commandsData = {
                 cookie: {
                     cmd: 'decrypt --sector=01 --file="COOKIE_PROTOCOL.DAT"',
-                    out: "> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...
-" +
-                         "> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.
-" +
-                         "> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов."
+                    out: "> ЗАГРУЗКА ФАЙЛА: COOKIE_PROTOCOL.DAT...\n> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.\n> ОПИСАНИЕ: Цифровая копия сознания, извлечённая из нейроинтерфейса. Не имеет юридических прав. Используется для управления умным домом или симуляции допросов."
                 },
                 1984: {
                     cmd: 'decrypt --sector=02 --file="ORWELL_SYNC.LOG"',
-                    out: "> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...
-" +
-                         "> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку."
+                    out: "> ЗАГРУЗКА ФАЙЛА: ORWELL_SYNC.LOG...\n> СРАВНИТЕЛЬНЫЙ АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим этот экран в кармане и сами платим за подписку на слежку."
                 },
                 author: {
                     cmd: 'cat /archive/CREATOR_NOTE.TXT',
-                    out: "> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...
-" +
-                         "> АВТОР ПРОЕКТА: Chainik Rassela.
-" +
-                         "> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages."
+                    out: "> ЗАГРУЗКА ФАЙЛА: CREATOR_NOTE.TXT...\n> АВТОР ПРОЕКТА: Chainik Rassela.\n> СБОРКА И КОД: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть на GitHub Pages."
                 },
                 trace: {
                     cmd: 'netstat --trace-user --deep-scan',
@@ -467,11 +423,7 @@
                 },
                 glitch: {
                     cmd: 'sudo inject --payload=WHITE_BEAR_OVERRIDE',
-                    out: "> ВНИМАНИЕ! ОБНАРУЖЕНО НЕСАНКЦИОНИРОВАННОЕ ВМЕШАТЕЛЬСТВО!
-" +
-                         "> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА... [ERR_0x884F]
-" +
-                         "> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА..."
+                    out: "> ВНИМАНИЕ! ОБНАРУЖЕНО НЕСАНКЦИОНИРОВАННОЕ ВМЕШАТЕЛЬСТВО!\n> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА... [ERR_0x884F]\n> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА..."
                 },
                 symbol: {
                     cmd: 'render --glyph="BANDERSNATCH_PATH"',
@@ -479,28 +431,25 @@
                 },
                 password: {
                     cmd: 'auth --sector=CLASSIFIED --prompt-key',
-                    out: "> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.
-" +
-                         "> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ В ПОЛЕ НИЖЕ ДЛЯ ПОДТВЕРЖДЕНИЯ ЛИЧНОСТИ..."
+                    out: "> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.\n> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ В ПОЛЕ НИЖЕ ДЛЯ ПОДТВЕРЖДЕНИЯ ЛИЧНОСТИ..."
                 },
                 wipe: {
                     cmd: 'clear && reset --session',
-                    out: "> ЭКРАН ОЧИЩЕН.
-" +
-                         "> ОЖИДАНИЕ НОВОЙ КОМАНДЫ..."
+                    out: "> ЭКРАН ОЧИЩЕН.\n> ОЖИДАНИЕ НОВОЙ КОМАНДЫ..."
                 }
             };
 
             function setButtonsDisabled(state) {
-                document.querySelectorAll('.cmd-btn[data-cmd]').forEach(function (btn) {
-                    btn.disabled = state;
-                });
+                const btns = document.querySelectorAll('#cmd-buttons-panel .cmd-btn');
+                for (let i = 0; i < btns.length; i++) {
+                    btns[i].disabled = state;
+                }
             }
 
             function typeWriter(element, text, speed, callback) {
                 element.textContent = '';
                 let i = 0;
-                const timer = setInterval(function () {
+                const timer = setInterval(function() {
                     element.textContent += text.charAt(i);
                     i++;
                     if (i >= text.length) {
@@ -511,10 +460,7 @@
             }
 
             function runCommand(key) {
-                if (isTyping) return;
-                const item = commandsData[key];
-                if (!item) return;
-
+                if (isTyping || !commandsData[key]) return;
                 isTyping = true;
                 setButtonsDisabled(true);
 
@@ -527,29 +473,31 @@
                     passBox.classList.remove('active');
                 }
 
-                typeWriter(cmdEl, item.cmd, 25, function () {
-                    setTimeout(function () {
+                const item = commandsData[key];
+
+                typeWriter(cmdEl, item.cmd, 25, function() {
+                    setTimeout(function() {
                         if (key === 'glitch') {
                             termWindow.classList.add('glitch-mode');
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 termWindow.classList.remove('glitch-mode');
                             }, 2600);
                         }
 
                         if (item.isSymbol) {
                             screenEl.innerHTML = '';
-                            const headerSpan = document.createElement('div');
-                            const preEl = document.createElement('pre');
-                            preEl.className = 'ascii-art';
-                            const footerSpan = document.createElement('div');
+                            const topText = document.createElement('div');
+                            const artPre = document.createElement('pre');
+                            artPre.className = 'ascii-art-box';
+                            const bottomText = document.createElement('div');
 
-                            screenEl.appendChild(headerSpan);
-                            screenEl.appendChild(preEl);
-                            screenEl.appendChild(footerSpan);
+                            screenEl.appendChild(topText);
+                            screenEl.appendChild(artPre);
+                            screenEl.appendChild(bottomText);
 
-                            typeWriter(headerSpan, '> ЗАГРУЗКА ГРАФИЧЕСКОГО СИМВОЛА ВЫБОРА...', 14, function () {
-                                typeWriter(preEl, symbolAscii, 10, function () {
-                                    typeWriter(footerSpan, '> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА.', 14, function () {
+                            typeWriter(topText, "> ЗАГРУЗКА ГРАФИЧЕСКОГО СИМВОЛА ВЫБОРА...", 15, function() {
+                                typeWriter(artPre, symbolArt, 8, function() {
+                                    typeWriter(bottomText, "> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА.", 15, function() {
                                         isTyping = false;
                                         setButtonsDisabled(false);
                                     });
@@ -559,7 +507,7 @@
                         }
 
                         const outputText = item.dynamicOut ? item.dynamicOut() : item.out;
-                        typeWriter(screenEl, outputText, 12, function () {
+                        typeWriter(screenEl, outputText, 12, function() {
                             isTyping = false;
                             setButtonsDisabled(false);
 
@@ -570,7 +518,7 @@
                                 input.focus();
                             }
                         });
-                    }, 220);
+                    }, 200);
                 });
             }
 
@@ -583,14 +531,12 @@
 
                 if (val === '111126') {
                     passBox.classList.remove('active');
-                    screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.
-> ОТКРЫТИЕ ВНЕШНЕГО ОКНА...';
+                    screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.\n> ОТКРЫТИЕ ВНЕШНЕГО ОКНА...';
                     dialog.style.left = '0px';
                     dialog.style.top = '0px';
                     document.getElementById('win-modal').classList.add('open');
                 } else {
-                    screenEl.textContent = '> ОШИБКА: НЕВЕРНЫЙ КОД ДОСТУПА [ACCESS DENIED].
-> ПОПРОБУЙТЕ СНОВА...';
+                    screenEl.textContent = '> ОШИБКА: НЕВЕРНЫЙ КОД ДОСТУПА [ACCESS DENIED].\n> ПОПРОБУЙТЕ СНОВА...';
                     input.value = '';
                     input.focus();
                 }
@@ -600,24 +546,76 @@
                 document.getElementById('win-modal').classList.remove('open');
             }
 
-            // Навешиваем обработчики через addEventListener (надёжно и без сбоев)
-            document.querySelectorAll('.cmd-btn[data-cmd]').forEach(function (btn) {
-                btn.addEventListener('click', function () {
-                    runCommand(btn.getAttribute('data-cmd'));
+            // Делегирование клика по панели кнопок (работает всегда и мгновенно)
+            const panel = document.getElementById('cmd-buttons-panel');
+            if (panel) {
+                panel.addEventListener('click', function(e) {
+                    const btn = e.target.closest('button[data-cmd]');
+                    if (btn && !btn.disabled) {
+                        runCommand(btn.getAttribute('data-cmd'));
+                    }
                 });
+            }
+
+            const passBtn = document.getElementById('pass-submit-btn');
+            if (passBtn) {
+                passBtn.addEventListener('click', checkPassword);
+            }
+
+            const passInput = document.getElementById('secret-pass');
+            if (passInput) {
+                passInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+            }
+
+            const closeX = document.getElementById('win-close-x');
+            if (closeX) closeX.addEventListener('click', closeWinModal);
+
+            const closeOk = document.getElementById('win-close-ok');
+            if (closeOk) closeOk.addEventListener('click', closeWinModal);
+
+            const winModal = document.getElementById('win-modal');
+            if (winModal) {
+                winModal.addEventListener('click', function(e) {
+                    if (e.target === winModal) closeWinModal();
+                });
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeWinModal();
             });
 
-            document.getElementById('btn-submit-pass').addEventListener('click', checkPassword);
-            document.getElementById('btn-win-close').addEventListener('click', closeWinModal);
-            document.getElementById('btn-win-ok').addEventListener('click', closeWinModal);
+            // Перетаскивание окна Windows
+            const dialog = document.getElementById('win-dialog');
+            const titlebar = document.getElementById('win-titlebar');
+            let isDragging = false;
+            let startX = 0, startY = 0, origLeft = 0, origTop = 0;
 
-            document.getElementById('win-modal').addEventListener('click', function (e) {
-                if (e.target.id === 'win-modal') {
-                    closeWinModal();
-                }
-            });
+            if (titlebar && dialog) {
+                titlebar.addEventListener('mousedown', function(e) {
+                    if (e.target.closest('#win-close-x')) return;
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    origLeft = parseFloat(dialog.style.left) || 0;
+                    origTop = parseFloat(dialog.style.top) || 0;
+                });
 
-            document.getElementById('secret-pass').addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    c
+                document.addEventListener('mousemove', function(e) {
+                    if (!isDragging) return;
+                    dialog.style.left = (origLeft + e.clientX - startX) + 'px';
+                    dialog.style.top = (origTop + e.clientY - startY) + 'px';
+                });
+
+                document.addEventListener('mouseup', function() {
+                    isDragging = false;
+                });
+            }
+        })();
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
