@@ -500,3 +500,16 @@ body::after {
     z-index: 9990;
     pointer-events: none;
 }
+/* Заблокированные пункты меню при низком рейтинге */
+.nav-links a.locked-link {
+    color: #444 !important;
+    text-shadow: none !important;
+    opacity: 0.55;
+    position: relative;
+}
+
+.nav-links a.locked-link::after {
+    content: " 🔒";
+    font-size: 0.72rem;
+    opacity: 0.8;
+}

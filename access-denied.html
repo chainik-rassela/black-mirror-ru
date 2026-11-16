@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 // Доступ временно заблокирован</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .denied-box {
+            text-align: center;
+            border: 1px solid #ff005566;
+            background: #0c0608;
+            box-shadow: 0 0 40px rgba(255, 0, 85, 0.2);
+        }
+        .error-code {
+            font-family: "Courier New", monospace;
+            font-size: clamp(4rem, 12vw, 7rem);
+            font-weight: 900;
+            color: #ff0055;
+            text-shadow: 0 0 30px rgba(255, 0, 85, 0.6);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        .status-box {
+            display: inline-block;
+            background: #1a090e;
+            border: 1px dashed #ff0055;
+            color: #ff4d88;
+            font-family: "Courier New", monospace;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            margin: 1.2rem 0;
+            font-size: 0.95rem;
+        }
+        .denied-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .denied-actions .btn {
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header id="navbar"></header>
+
+    <div class="container">
+        <div class="card visible denied-box">
+            <span class="tag">Протокол «Нырок» // Ошибка 403</span>
+            <div class="error-code glitch" data-text="403">403</div>
+            <h1 class="page-title" style="font-size: clamp(1.5rem, 4vw, 2.3rem);">Доступ временно <span class="highlight">заблокирован</span></h1>
+            <p style="max-width: 620px; margin: 0 auto 1rem;">
+                Доступ к информационным разделам сайта временно приостановлен до прохождения квеста в терминале или перепрохождения теста на социальный рейтинг.
+            </p>
+            <div class="status-box" id="denied-rating-info">
+                ТЕКУЩИЙ РЕЙТИНГ: ★ 1.5 (ТРЕБУЕТСЯ МИНИМУМ ★ 2.5)
+            </div>
+            <p style="font-size: 0.92rem; color: #888;">
+                Выберите способ реабилитации в системе, чтобы разблокировать все секторы архива:
+            </p>
+            <div class="denied-actions">
+                <a href="terminal.html" class="btn">Пройти квест в терминале →</a>
+                <a href="simulator.html" class="btn">Пересдать соцрейтинг →</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.bmSound) window.bmSound.playError();
+            const r = window.getGlobalRating ? window.getGlobalRating() : 1.5;
+            document.getElementById("denied-rating-info").textContent =
+                `ТЕКУЩИЙ РЕЙТИНГ: ★ ${r.toFixed(1)} (ТРЕБУЕТСЯ МИНИМУМ ★ 2.5)`;
+        });
+    </script>
+</body>
+</html>

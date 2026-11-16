@@ -64,19 +64,63 @@ window.getGlobalRating = function() {
     return saved !== null ? parseFloat(saved) : 4.2;
 };
 
+window.isSiteLocked = function() {
+    const rating = window.getGlobalRating();
+    const questFailed = localStorage.getItem("bm_quest_failed") === "true";
+    return rating < 2.5 || questFailed;
+};
+
 window.updateGlobalRating = function(newScore) {
     const clamped = Math.max(0.1, Math.min(5.0, parseFloat(newScore))).toFixed(1);
     localStorage.setItem("bm_rating", clamped);
     const badge = document.getElementById("globalRatingBadge");
     if (badge) badge.textContent = `★ ${clamped}`;
-    document.body.classList.toggle("outcast-mode", parseFloat(clamped) < 2.5);
+    document.body.classList.toggle("outcast-mode", window.isSiteLocked());
+    updateMenuLocks();
 };
+
+function updateMenuLocks() {
+    const rating = window.getGlobalRating();
+    const questFailed = localStorage.getItem("bm_quest_failed") === "true";
+    const locked = window.isSiteLocked();
+
+    const allowedPages = ["index.html", "simulator.html", "access-denied.html"];
+    // Если провален только квест (рейтинг >= 2.5), оставляем терминал доступным в меню
+    if (questFailed && rating >= 2.5) {
+        allowedPages.push("terminal.html");
+    }
+
+    document.querySelectorAll("#navLinks a").forEach(link => {
+        const href = link.getAttribute("href");
+        if (locked && !allowedPages.includes(href)) {
+            link.classList.add("locked-link");
+        } else {
+            link.classList.remove("locked-link");
+        }
+    });
+}
+
+// Мгновенная проверка доступа при загрузке любой страницы
+(function checkPageAccess() {
+    const rating = window.getGlobalRating();
+    const questFailed = localStorage.getItem("bm_quest_failed") === "true";
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+
+    const allowedPages = ["index.html", "simulator.html", "access-denied.html"];
+    if (questFailed && rating >= 2.5) {
+        allowedPages.push("terminal.html");
+    }
+
+    if (window.isSiteLocked() && !allowedPages.includes(currentPage)) {
+        window.location.replace("access-denied.html");
+    }
+})();
 
 document.addEventListener("DOMContentLoaded", () => {
     const currentRating = window.getGlobalRating();
-    if (currentRating < 2.5) document.body.classList.add("outcast-mode");
+    if (window.isSiteLocked()) document.body.classList.add("outcast-mode");
 
-    // Создаём реальный слой ЭЛТ-монитора
+    // Создаём слой ЭЛТ-монитора
     let crtEnabled = localStorage.getItem("bm_crt") !== "off";
     const crtOverlay = document.createElement("div");
     crtOverlay.id = "crt-overlay";
@@ -120,6 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="nav-links" id="navLinks">${linksHTML}</div>
             </nav>
         `;
+
+        updateMenuLocks();
 
         document.getElementById("soundToggleBtn").addEventListener("click", function() {
             window.bmSound.enabled = !window.bmSound.enabled;
