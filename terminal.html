@@ -478,7 +478,20 @@
                             { text: "Я — ПОЛЬЗОВАТЕЛЬ ИЗ БУДУЩЕГО (2026)", next: "end_truth" }
                         ]
                     }
-                ];
+                ];                function triggerTimeoutLockout() {
+                    questBox.classList.remove("active");
+                    isTyping = false;
+                    localStorage.setItem("bm_quest_failed", "true");
+                    document.body.classList.add("outcast-mode");
+                    if (typeof updateMenuLocks === "function") updateMenuLocks();
+                    if (window.bmSound) window.bmSound.playError();
+                    
+                    document.querySelectorAll('#cmd-buttons-panel .cmd-btn').forEach(b => {
+                        b.disabled = (b.getAttribute('data-cmd') !== 'quest');
+                    });
+                    document.getElementById('term-screen').innerHTML = `<span style="color:#ff0055;">&gt; СБОЙ: ВЫ ПРОИГНОРИРОВАЛИ ВЫБОР.\n&gt; ОСТАЛЬНЫЕ РАЗДЕЛЫ ЗАБЛОКИРОВАНЫ. ПЕРЕПРОЙДИТЕ КВЕСТ.</span>`;
+                }
+
 
                 function loadStage(idx) {
                     clearInterval(questTimer);
@@ -489,7 +502,15 @@
                             end_secret: "> КОНЦОВКА 2/3 [ПЕТЛЯ ВЫБОРА]: Символ принят. Свобода воли — иллюзия.\n> НАГРАДА: Секретный код доступа к сектору — 1111.",
                             end_truth: "> КОНЦОВКА 3/3 [ПРОРЫВ СТЕНЫ]: Стефан понял, что за ним наблюдают из 2026 года.\n> НАГРАДА: Секретный код доступа к сектору — 1111."
                         };
-                        typeWriter(screenEl, endings[idx], 14, () => {
+                        let msg = endings[idx];
+                        if (localStorage.getItem("bm_quest_failed") === "true") {
+                            localStorage.removeItem("bm_quest_failed");
+                            document.body.classList.remove("outcast-mode");
+                            if (typeof updateMenuLocks === "function") updateMenuLocks();
+                            msg += "\n\n> БЛОКИРОВКА СНЯТА. ДОСТУП ВОССТАНОВЛЕН.";
+                        }
+                        typeWriter(screenEl, msg, 14, () => {
+
                             isTyping = false;
                             setButtonsDisabled(false);
                         });
@@ -506,6 +527,7 @@
                             btn.className = "cmd-btn";
                             btn.textContent = ch.text;
                             btn.onclick = () => {
+                                clearInterval(questTimer);
                                 if (window.bmSound) window.bmSound.playType();
                                 loadStage(ch.next);
                             };
@@ -518,9 +540,10 @@
                             timeLeft -= 1.25;
                             timerFill.style.width = Math.max(0, timeLeft) + "%";
                             if (timeLeft <= 0) {
-                                clearInterval(questTimer);
-                                loadStage(st.choices[0].next);
-                            }
+    clearInterval(questTimer);
+    triggerTimeoutLockout();
+}
+
                         }, 100);
                     });
                 }
