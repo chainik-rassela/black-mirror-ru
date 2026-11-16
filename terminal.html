@@ -92,6 +92,8 @@
             color: var(--accent);
             overflow-x: auto;
         }
+
+        /* Квест Брандашмыг */
         .quest-box {
             display: none;
             background: #05080b;
@@ -114,7 +116,14 @@
             background: #ff0055;
             transition: width 0.1s linear;
         }
-        .quest-choices { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.8rem; }
+        .quest-choices {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 0.8rem;
+        }
+
+        /* Поле пароля */
         .password-box {
             display: none;
             background: #040608;
@@ -140,7 +149,19 @@
             width: 150px;
             letter-spacing: 2px;
         }
-        .cmd-buttons { display: flex; flex-wrap: wrap; gap: 0.75rem; position: relative; z-index: 5; }
+        .password-input:focus {
+            border-color: #ffd000;
+            box-shadow: 0 0 10px rgba(255, 208, 0, 0.3);
+        }
+
+        /* Кнопки команд */
+        .cmd-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 5;
+        }
         .cmd-btn {
             background: #11161a;
             border: 1px solid var(--accent-dim);
@@ -159,10 +180,19 @@
         }
         .cmd-btn:disabled { opacity: 0.45; cursor: not-allowed; }
         .cmd-btn.danger { border-color: #ff005566; color: #ff4d88; }
-        .cmd-btn.danger:hover:not(:disabled) { background: #ff0055; color: #fff; }
+        .cmd-btn.danger:hover:not(:disabled) {
+            background: #ff0055;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+        }
         .cmd-btn.secret { border-color: #ffd00066; color: #ffd000; }
-        .cmd-btn.secret:hover:not(:disabled) { background: #ffd000; color: #050505; }
+        .cmd-btn.secret:hover:not(:disabled) {
+            background: #ffd000;
+            color: #050505;
+            box-shadow: 0 0 15px rgba(255, 208, 0, 0.45);
+        }
 
+        /* Окно Windows */
         .win-overlay {
             display: none;
             position: fixed;
@@ -186,7 +216,7 @@
             border-left: 2px solid #ffffff;
             border-right: 2px solid #404040;
             border-bottom: 2px solid #404040;
-            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85);
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.85), 0 0 35px var(--accent-dim);
         }
         .win-titlebar {
             background: linear-gradient(90deg, #000080, #1084d0);
@@ -199,37 +229,76 @@
             font-size: 0.85rem;
             user-select: none;
             cursor: grab;
+            touch-action: none;
         }
+        .win-title-left { display: flex; align-items: center; gap: 6px; }
         .win-close-btn {
             background: #c0c0c0;
             color: #000;
-            border: 1px solid #404040;
+            border-top: 1px solid #fff;
+            border-left: 1px solid #fff;
+            border-right: 1px solid #404040;
+            border-bottom: 1px solid #404040;
             width: 22px;
             height: 20px;
+            font-size: 12px;
             font-weight: bold;
+            line-height: 16px;
+            text-align: center;
             cursor: pointer;
+            padding: 0;
+            flex-shrink: 0;
         }
-        .win-body { padding: 1.4rem 1.2rem 1rem; display: flex; align-items: flex-start; gap: 1rem; }
+        .win-body {
+            padding: 1.4rem 1.2rem 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
         .win-icon {
-            width: 36px; height: 36px; min-width: 36px; border-radius: 50%;
-            background: #d90000; color: #fff; font-weight: 900; font-size: 1.3rem;
-            display: flex; align-items: center; justify-content: center; border: 2px solid #800000;
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 50%;
+            background: #d90000;
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #800000;
+            box-shadow: 1px 1px 0 #fff;
+            user-select: none;
         }
+        .win-text-block { display: flex; flex-direction: column; gap: 0.45rem; }
         .win-main-msg { font-size: 1rem; font-weight: 700; color: #111; }
-        .win-sub-msg { font-size: 0.85rem; color: #444; font-style: italic; margin-top: 0.3rem; }
+        .win-sub-msg { font-size: 0.85rem; color: #444; font-style: italic; }
         .win-footer { padding: 0.5rem 1.2rem 1.1rem; display: flex; justify-content: center; }
         .win-ok-btn {
-            background: #c0c0c0; color: #000; padding: 6px 32px;
-            border-top: 2px solid #fff; border-left: 2px solid #fff;
-            border-right: 2px solid #404040; border-bottom: 2px solid #404040; cursor: pointer;
+            background: #c0c0c0;
+            color: #000;
+            padding: 6px 32px;
+            font-family: "Tahoma", "Segoe UI", Arial, sans-serif;
+            font-size: 0.9rem;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #404040;
+            border-bottom: 2px solid #404040;
+            cursor: pointer;
         }
+
         @media (max-width: 768px) {
             .container { padding-top: 5.8rem; }
-            .terminal-window { padding: 1.1rem; }
+            .terminal-window { padding: 1.1rem; border-radius: 10px; }
+            .terminal-header { font-size: 0.72rem; }
+            .cmd-line-bar { padding: 0.6rem 0.8rem; font-size: 0.82rem; }
+            .terminal-output { min-height: 160px; font-size: 0.86rem; line-height: 1.55; }
             .password-box { flex-direction: column; align-items: stretch; }
-            .password-input { width: 100%; font-size: 16px; }
+            .password-input { width: 100%; font-size: 16px; padding: 0.7rem; }
+            .password-box .cmd-btn, .quest-choices .cmd-btn { width: 100%; text-align: center; padding: 0.8rem; }
             .cmd-buttons { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
-            .cmd-btn { width: 100%; text-align: left; }
+            .cmd-btn { width: 100%; text-align: left; padding: 0.85rem 1rem; font-size: 0.85rem; }
         }
     </style>
 </head>
@@ -262,240 +331,325 @@
                 <div class="quest-choices" id="quest-choices"></div>
             </div>
 
-Используйте код с осторожностью.
-> ВВЕДИТЕ КОД ДОСТУПА:
-ВВОД
- ПРОТОКОЛ «КУКИ»
- АРХИВ «1984»
- ЗАМЕТКА СОЗДАТЕЛЯ
- ТРАССИРОВКА СЛЕДА
- СБОЙ МАТРИЦЫ
- СИМВОЛ ВЫБОРА
- PASSWORD
- БРАНДАШМЫГ [КВЕСТ]
- ОЧИСТИТЬ ЭКРАН
+            <div class="password-box" id="password-box">
+                <label for="secret-pass">&gt; ВВЕДИТЕ КОД ДОСТУПА:</label>
+                <input type="password" id="secret-pass" class="password-input" placeholder="****" maxlength="12">
+                <button type="button" class="cmd-btn secret" id="pass-submit-btn">ВВОД</button>
+            </div>
 
-← Вернуться на главную
-⚠ System_Alert.exe — Критический сбой
-X
+            <div class="cmd-buttons" id="cmd-buttons-panel">
+                <button type="button" class="cmd-btn" data-cmd="cookie">[01] ПРОТОКОЛ «КУКИ»</button>
+                <button type="button" class="cmd-btn" data-cmd="1984">[02] АРХИВ «1984»</button>
+                <button type="button" class="cmd-btn" data-cmd="author">[03] ЗАМЕТКА СОЗДАТЕЛЯ</button>
+                <button type="button" class="cmd-btn" data-cmd="trace">[04] ТРАССИРОВКА СЛЕДА</button>
+                <button type="button" class="cmd-btn danger" data-cmd="glitch">[05] СБОЙ МАТРИЦЫ</button>
+                <button type="button" class="cmd-btn" data-cmd="symbol">[06] СИМВОЛ ВЫБОРА</button>
+                <button type="button" class="cmd-btn secret" data-cmd="password">[07] PASSWORD</button>
+                <button type="button" class="cmd-btn" data-cmd="quest">[08] БРАНДАШМЫГ [КВЕСТ]</button>
+                <button type="button" class="cmd-btn" data-cmd="wipe">[09] ОЧИСТИТЬ ЭКРАН</button>
+            </div>
+        </div>
 
+        <a href="index.html" class="btn">← Вернуться на главную</a>
+    </div>
 
-✕
+    <div class="win-overlay" id="win-modal">
+        <div class="win-dialog" id="win-dialog">
+            <div class="win-titlebar" id="win-titlebar">
+                <div class="win-title-left">
+                    <span>⚠</span>
+                    <span>System_Alert.exe — Критический сбой сектора</span>
+                </div>
+                <button type="button" class="win-close-btn" id="win-close-x" title="Закрыть">X</button>
+            </div>
+            <div class="win-body">
+                <div class="win-icon">✕</div>
+                <div class="win-text-block">
+                    <div class="win-main-msg">Упс — эта херня не работает</div>
+                    <div class="win-sub-msg">Soon...</div>
+                </div>
+            </div>
+            <div class="win-footer">
+                <button type="button" class="win-ok-btn" id="win-close-ok">ОК</button>
+            </div>
+        </div>
+    </div>
 
-Упс — эта херня не работает
-Soon...
+    <script src="script.js"></script>
+    <script>
+        (function() {
+            let isTyping = false;
+            let questTimer = null;
 
+            function setButtonsDisabled(state) {
+                document.querySelectorAll('#cmd-buttons-panel .cmd-btn').forEach(b => b.disabled = state);
+            }
 
+            // Блокировка при рейтинге ниже 2.5
+            const rating = window.getGlobalRating ? window.getGlobalRating() : 4.2;
+            if (rating < 2.5) {
+                document.getElementById('term-screen').innerHTML =
+                    `<span style="color:#ff0055;">&gt; ДОСТУП ЗАБЛОКИРОВАН ПРОТОКОЛОМ «НЫРОК».\n` +
+                    `&gt; ВАШ СОЦИАЛЬНЫЙ РЕЙТИНГ: ★ ${rating.toFixed(1)} (СТАТУС ИЗГОЯ).\n` +
+                    `&gt; ДЛЯ РАЗБЛОКИРОВКИ ПОВЫСЬТЕ РЕЙТИНГ ДО 2.5+ В РАЗДЕЛЕ «РЕЙТИНГ».</span>`;
+                setButtonsDisabled(true);
+            }
 
-ОК
+            function getTraceData() {
+                const res = window.screen.width + "x" + window.screen.height;
+                const lang = navigator.language || "ru-RU";
+                let tz = "Не определено";
+                try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz; } catch (e) {}
+                return `> ЗАПУСК СКАНЕРА ЦИФРОВОГО СЛЕДА...\n> ДИСПЛЕЙ: ${res} px\n> СИСТЕМА: ${navigator.platform || "Unknown"}\n> ЯЗЫК: ${lang}\n> ЧАСОВОЙ ПОЯС: ${tz}\n> СТАТУС: Объект идентифицирован. Анонимность — иллюзия.`;
+            }
 
+            const symbolArt = "        /\\\n       /  \\\n      /    \\\n     /  /\\  \\\n    /  /  \\  \\\n   /__/    \\__\\\n      |    |\n      |    |";
 
-(function() {
-let isTyping = false;
-let questTimer = null;
-function setButtonsDisabled(state) {
-document.querySelectorAll('#cmd-buttons-panel .cmd-btn').forEach(b => b.disabled = state);
-}
-function applyTerminalState() {
-const r = window.getGlobalRating ? window.getGlobalRating() : 4.2;
-const qFailed = localStorage.getItem("bm_quest_failed") === "true";
-const btns = document.querySelectorAll('#cmd-buttons-panel .cmd-btn');
-if (r < 2.5) {
-document.getElementById('term-screen').innerHTML =
-<span style="color:#ff0055;">&gt; ДОСТУП ЗАБЛОКИРОВАН ПРОТОКОЛОМ «НЫРОК».\n +
-&gt; ВАШ СОЦИАЛЬНЫЙ РЕЙТИНГ: ★ ${r.toFixed(1)} (СТАТУС ИЗГОЯ).\n +
-&gt; ТЕРМИНАЛ ПОЛНОСТЬЮ ОТКЛЮЧЁН ДО ПЕРЕСДАЧИ СОЦОПРОСА.</span>;
-btns.forEach(b => b.disabled = true);
-} else if (qFailed) {
-document.getElementById('term-screen').innerHTML =
-<span style="color:#ff0055;">&gt; СБОЙ ПРОТОКОЛА «БРАНДАШМЫГ»: ВЫ ПРОИГНОРИРОВАЛИ ВЫБОР.\n +
-&gt; ОСТАЛЬНЫЕ РАЗДЕЛЫ САЙТА И АРХИВ ВРЕМЕННО ЗАБЛОКИРОВАНЫ.\n +
-&gt; НАЖМИТЕ  БРАНДАШМЫГ [КВЕСТ], ЧТОБЫ ПЕРЕПРОЙТИ И СНЯТЬ БЛОКИРОВКУ.</span>;
-btns.forEach(b => b.disabled = (b.getAttribute('data-cmd') !== 'quest'));
-} else {
-btns.forEach(b => b.disabled = false);
-}
-}
-applyTerminalState();
-function getTraceData() {
-const res = window.screen.width + "x" + window.screen.height;
-let tz = "Не определено";
-try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz; } catch (e) {}
-return > СКАНЕР СЛЕДА...\n> ДИСПЛЕЙ: ${res} px\n> СИСТЕМА: ${navigator.platform || "Unknown"}\n> ЯЗЫК: ${navigator.language || "ru"}\n> ПОЯС: ${tz};
-}
-const symbolArt = "        /\\n       /  \\n      /    \\n     /  /\  \\n    /  /  \  \\n   //    \\\n      |    |\n      |    |";
-const commandsData = {
-cookie: { cmd: 'decrypt --file="COOKIE.DAT"', out: "> ФАЙЛ: COOKIE.DAT.\n> Цифровая копия сознания из нейроинтерфейса без юридических прав." },
-1984: { cmd: 'decrypt --file="ORWELL.LOG"', out: "> ФАЙЛ: ORWELL.LOG.\n> В 1949 Оруэлл описал телекран. В XXI веке мы сами носим его в кармане." },
-author: { cmd: 'cat /archive/NOTE.TXT', out: "> АВТОР: Chainik Rassela.\n> Сборка и код созданы в диалоге с ИИ-ассистентом." },
-trace: { cmd: 'netstat --trace-user', dynamicOut: getTraceData },
-glitch: { cmd: 'sudo inject --override', out: "> ВНИМАНИЕ! СБОЙ ЯДРА [ERR_0x884F]!\n> ПЕРЕЗАГРУЗКА КОНТУРА..." },
-symbol: { cmd: 'render --glyph="PATH"', isSymbol: true },
-password: { cmd: 'auth --sector=CLASSIFIED', out: "> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ НИЖЕ..." },
-quest: { cmd: 'exec --sim="BANDERSNATCH.SH"', isQuest: true },
-wipe: { cmd: 'clear', out: "> ЭКРАН ОЧИЩЕН." }
-};
-function typeWriter(el, text, speed, cb) {
-el.textContent = '';
-let i = 0;
-const timer = setInterval(() => {
-el.textContent += text.charAt(i);
-if (window.bmSound && i % 2 === 0) window.bmSound.playType();
-i++;
-if (i >= text.length) { clearInterval(timer); if (cb) cb(); }
-}, speed);
-}
-function startQuest() {
-const screenEl = document.getElementById('term-screen');
-const questBox = document.getElementById('quest-box');
-const promptEl = document.getElementById('quest-prompt');
-const choicesEl = document.getElementById('quest-choices');
-const timerFill = document.getElementById('quest-timer-fill');
-const stages = [
-{ log: "> ЗАПУСК «БРАНДАШМЫГ»...\n> ВЫ — СТЕФАН. ВРЕМЯ НА ВЫБОР ОГРАНИЧЕНО.", prompt: "УТРО. ЧТО ВЫБРАТЬ?", choices: [{ text: "SUGAR PUFFS", next: 1 }, { text: "FROSTIES", next: 1 }] },
-{ log: "> В СТУДИИ TUCKERSOFT ВАМ ПРЕДЛАГАЮТ РАБОТАТЬ В КОМАНДЕ.", prompt: "ПРИНЯТЬ КОНТРАКТ?", choices: [{ text: "ПРИНЯТЬ", next: "end_fail" }, { text: "ДЕЛАТЬ САМОМУ", next: 2 }] },
-{ log: "> МОНИТОР МЕРЦАЕТ: «КТО МНОЙ УПРАВЛЯЕТ?»", prompt: "ЧТО ОТВЕТИТЬ?", choices: [{ text: "СИМВОЛ ВЫБОРА", next: "end_secret" }, { text: "ПОЛЬЗОВАТЕЛЬ ИЗ 2026", next: "end_truth" }] }
-];
-function triggerTimeoutLockout() {
-questBox.classList.remove("active");
-isTyping = false;
-localStorage.setItem("bm_quest_failed", "true");
-document.body.classList.add("outcast-mode");
-if (typeof updateMenuLocks === "function") updateMenuLocks();
-if (window.bmSound) window.bmSound.playError();
-applyTerminalState();
-}
-function loadStage(idx) {
-clearInterval(questTimer);
-if (typeof idx === "string") {
-questBox.classList.remove("active");
-const endings = {
-end_fail: "> КОНЦОВКА 1/3: Игра получила 0 из 5 звёзд.",
-end_secret: "> КОНЦОВКА 2/3: Свобода воли — иллюзия. Код доступа: 1111.",
-end_truth: "> КОНЦОВКА 3/3: Стефан узнал про 2026 год. Код доступа: 1111."
-};
-let msg = endings[idx];
-if (localStorage.getItem("bm_quest_failed") === "true") {
-localStorage.removeItem("bm_quest_failed");
-document.body.classList.remove("outcast-mode");
-if (typeof updateMenuLocks === "function") updateMenuLocks();
-msg += "\n\n> БЛОКИРОВКА СНЯТА. ВСЕ РАЗДЕЛЫ СНОВА ОТКРЫТЫ.";
-}
-typeWriter(screenEl, msg, 14, () => { isTyping = false; applyTerminalState(); });
-return;
-}
-const st = stages[idx];
-typeWriter(screenEl, st.log, 14, () => {
-questBox.classList.add("active");
-promptEl.textContent = st.prompt;
-choicesEl.innerHTML = "";
-st.choices.forEach(ch => {
-const btn = document.createElement("button");
-btn.className = "cmd-btn";
-btn.textContent = ch.text;
-btn.onclick = () => {
-clearInterval(questTimer);
-if (window.bmSound) window.bmSound.playType();
-loadStage(ch.next);
-};
-choicesEl.appendChild(btn);
-});
-let timeLeft = 100;
-timerFill.style.width = "100%";
-questTimer = setInterval(() => {
-timeLeft -= 1.25;
-timerFill.style.width = Math.max(0, timeLeft) + "%";
-if (timeLeft <= 0) { clearInterval(questTimer); triggerTimeoutLockout(); }
-}, 100);
-});
-}
-loadStage(0);
-}
-function runCommand(key) {
-if (isTyping || !commandsData[key]) return;
-isTyping = true;
-setButtonsDisabled(true);
-const cmdEl = document.getElementById('cmd-typed');
-const screenEl = document.getElementById('term-screen');
-const passBox = document.getElementById('password-box');
-const questBox = document.getElementById('quest-box');
-const termWindow = document.getElementById('term-window');
-clearInterval(questTimer);
-questBox.classList.remove('active');
-if (key !== 'password') passBox.classList.remove('active');
-const item = commandsData[key];
-typeWriter(cmdEl, item.cmd, 22, () => {
-setTimeout(() => {
-if (key === 'glitch') {
-if (window.bmSound) window.bmSound.playGlitch();
-termWindow.classList.add('glitch-mode');
-setTimeout(() => termWindow.classList.remove('glitch-mode'), 2500);
-}
-if (item.isQuest) { startQuest(); return; }
-if (item.isSymbol) {
-screenEl.innerHTML = '';
-const pre = document.createElement('pre');
-pre.className = 'ascii-art-box';
-screenEl.appendChild(pre);
-typeWriter(pre, symbolArt, 8, () => { isTyping = false; applyTerminalState(); });
-return;
-}
-const outText = item.dynamicOut ? item.dynamicOut() : item.out;
-typeWriter(screenEl, outText, 12, () => {
-isTyping = false;
-applyTerminalState();
-if (key === 'password') {
-passBox.classList.add('active');
-const inp = document.getElementById('secret-pass');
-inp.value = '';
-inp.focus();
-}
-});
-}, 180);
-});
-}
-function checkPassword() {
-const inp = document.getElementById('secret-pass');
-const screenEl = document.getElementById('term-screen');
-const passBox = document.getElementById('password-box');
-const dialog = document.getElementById('win-dialog');
-if (inp.value.trim() === '1111') {
-if (window.bmSound) window.bmSound.playError();
-passBox.classList.remove('active');
-screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.';
-dialog.style.left = '0px';
-dialog.style.top = '0px';
-document.getElementById('win-modal').classList.add('open');
-} else {
-if (window.bmSound) window.bmSound.playGlitch();
-screenEl.textContent = '> ОШИБКА: НЕВЕРНЫЙ КОД.';
-inp.value = '';
-inp.focus();
-}
-}
-const closeWin = () => document.getElementById('win-modal').classList.remove('open');
-document.getElementById('cmd-buttons-panel').addEventListener('click', (e) => {
-const btn = e.target.closest('button[data-cmd]');
-if (btn && !btn.disabled) runCommand(btn.getAttribute('data-cmd'));
-});
-document.getElementById('pass-submit-btn').addEventListener('click', checkPassword);
-document.getElementById('secret-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') checkPassword(); });
-document.getElementById('win-close-x').addEventListener('click', closeWin);
-document.getElementById('win-close-ok').addEventListener('click', closeWin);
-document.getElementById('win-modal').addEventListener('click', (e) => { if (e.target.id === 'win-modal') closeWin(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeWin(); });
-const dialog = document.getElementById('win-dialog');
-const titlebar = document.getElementById('win-titlebar');
-let drag = false, sx = 0, sy = 0, ol = 0, ot = 0;
-titlebar.addEventListener('mousedown', (e) => {
-if (e.target.closest('#win-close-x')) return;
-drag = true; sx = e.clientX; sy = e.clientY;
-ol = parseFloat(dialog.style.left) || 0; ot = parseFloat(dialog.style.top) || 0;
-});
-document.addEventListener('mousemove', (e) => {
-if (!drag) return;
-dialog.style.left = (ol + e.clientX - sx) + 'px';
-dialog.style.top = (ot + e.clientY - sy) + 'px';
-});
-document.addEventListener('mouseup', () => drag = false);
-})();
+            const commandsData = {
+                cookie: {
+                    cmd: 'decrypt --sector=01 --file="COOKIE_PROTOCOL.DAT"',
+                    out: "> ЗАГРУЗКА: COOKIE_PROTOCOL.DAT...\n> СТАТУС: СОВЕРШЕННО СЕКРЕТНО.\n> ОПИСАНИЕ: Цифровая копия сознания из нейроинтерфейса. Не имеет юридических прав и используется для управления умным домом."
+                },
+                1984: {
+                    cmd: 'decrypt --sector=02 --file="ORWELL_SYNC.LOG"',
+                    out: "> ЗАГРУЗКА: ORWELL_SYNC.LOG...\n> АНАЛИЗ: В 1949 году Оруэлл описал телекран, который нельзя выключить. В XXI веке мы добровольно носим его в кармане."
+                },
+                author: {
+                    cmd: 'cat /archive/CREATOR_NOTE.TXT',
+                    out: "> ЗАГРУЗКА: CREATOR_NOTE.TXT...\n> АВТОР ПРОЕКТА: Chainik Rassela.\n> СБОРКА: Сгенерировано в диалоге с ИИ-ассистентом. Все 10 страниц объединены в единую статическую сеть."
+                },
+                trace: { cmd: 'netstat --trace-user --deep-scan', dynamicOut: getTraceData },
+                glitch: {
+                    cmd: 'sudo inject --payload=WHITE_BEAR_OVERRIDE',
+                    out: "> ВНИМАНИЕ! ОБНАРУЖЕНО ВМЕШАТЕЛЬСТВО!\n> ЦЕЛОСТНОСТЬ ЯДРА НАРУШЕНА... [ERR_0x884F]\n> ПЕРЕЗАГРУЗКА ЗАЩИТНОГО КОНТУРА..."
+                },
+                symbol: { cmd: 'render --glyph="BANDERSNATCH_PATH"', isSymbol: true },
+                password: {
+                    cmd: 'auth --sector=CLASSIFIED --prompt-key',
+                    out: "> ДОСТУП К ЗАКРЫТОМУ СЕКТОРУ ОГРАНИЧЕН.\n> ВВЕДИТЕ СЕКРЕТНЫЙ КЛЮЧ НИЖЕ..."
+                },
+                quest: { cmd: 'exec --interactive="BANDERSNATCH_SIM.SH"', isQuest: true },
+                wipe: { cmd: 'clear && reset --session', out: "> ЭКРАН ОЧИЩЕН.\n> ОЖИДАНИЕ НОВОЙ КОМАНДЫ..." }
+            };
+
+            function typeWriter(el, text, speed, cb) {
+                el.textContent = '';
+                let i = 0;
+                const timer = setInterval(() => {
+                    el.textContent += text.charAt(i);
+                    if (window.bmSound && i % 2 === 0) window.bmSound.playType();
+                    i++;
+                    if (i >= text.length) {
+                        clearInterval(timer);
+                        if (cb) cb();
+                    }
+                }, speed);
+            }
+
+            function startQuest() {
+                const screenEl = document.getElementById('term-screen');
+                const questBox = document.getElementById('quest-box');
+                const promptEl = document.getElementById('quest-prompt');
+                const choicesEl = document.getElementById('quest-choices');
+                const timerFill = document.getElementById('quest-timer-fill');
+
+                const stages = [
+                    {
+                        log: "> ЗАПУСК «БРАНДАШМЫГ» (1984)...\n> ВЫ — СТЕФАН. ВЫ ПИШЕТЕ ИГРУ И ЧУВСТВУЕТЕ ВНЕШНИЙ КОНТРОЛЬ.",
+                        prompt: "УТРО. ВРЕМЯ НА РЕШЕНИЕ ОГРАНИЧЕНО. ЧТО ВЫБРАТЬ?",
+                        choices: [
+                            { text: "ХЛОПЬЯ SUGAR PUFFS", next: 1 },
+                            { text: "ХЛОПЬЯ FROSTIES", next: 1 }
+                        ]
+                    },
+                    {
+                        log: "> ВЫБОР ЗАФИКСИРОВАН. НО БЫЛ ЛИ ОН ВАШИМ?\n> В СТУДИИ TUCKERSOFT ВАМ ПРЕДЛАГАЮТ РАБОТАТЬ В КОМАНДЕ.",
+                        prompt: "ПРИНЯТЬ ПРЕДЛОЖЕНИЕ ИЛИ ДЕЛАТЬ ИГРУ В ОДИНОЧКУ?",
+                        choices: [
+                            { text: "ПРИНЯТЬ КОНТРАКТ", next: "end_fail" },
+                            { text: "ОТКАЗАТЬСЯ И ДЕЛАТЬ САМОМУ", next: 2 }
+                        ]
+                    },
+                    {
+                        log: "> РАЗРАБОТКА ЗАШЛА В ТУПИК. МОНИТОР МЕРЦАЕТ.\n> ГОЛОС ИЗ СЕТИ СПРАШИВАЕТ: «КТО МНОЙ УПРАВЛЯЕТ?»",
+                        prompt: "ЧТО ВЫ ОТВЕТИТЕ СТЕФАНУ ЧЕРЕЗ ЭКРАН?",
+                        choices: [
+                            { text: "СИМВОЛ БЕЛОГО МЕДВЕДЯ (ПУТЬ ВЕТВЛЕНИЯ)", next: "end_secret" },
+                            { text: "Я — ПОЛЬЗОВАТЕЛЬ ИЗ БУДУЩЕГО (2026)", next: "end_truth" }
+                        ]
+                    }
+                ];
+
+                function loadStage(idx) {
+                    clearInterval(questTimer);
+                    if (typeof idx === "string") {
+                        questBox.classList.remove("active");
+                        const endings = {
+                            end_fail: "> КОНЦОВКА 1/3 [ПРОВАЛ]: Игра вышла сырой и получила 0 из 5 звёзд. Перезапуск ветки...",
+                            end_secret: "> КОНЦОВКА 2/3 [ПЕТЛЯ ВЫБОРА]: Символ принят. Свобода воли — иллюзия.\n> НАГРАДА: Секретный код доступа к сектору — 1111.",
+                            end_truth: "> КОНЦОВКА 3/3 [ПРОРЫВ СТЕНЫ]: Стефан понял, что за ним наблюдают из 2026 года.\n> НАГРАДА: Секретный код доступа к сектору — 1111."
+                        };
+                        typeWriter(screenEl, endings[idx], 14, () => {
+                            isTyping = false;
+                            setButtonsDisabled(false);
+                        });
+                        return;
+                    }
+
+                    const st = stages[idx];
+                    typeWriter(screenEl, st.log, 14, () => {
+                        questBox.classList.add("active");
+                        promptEl.textContent = st.prompt;
+                        choicesEl.innerHTML = "";
+                        st.choices.forEach(ch => {
+                            const btn = document.createElement("button");
+                            btn.className = "cmd-btn";
+                            btn.textContent = ch.text;
+                            btn.onclick = () => {
+                                if (window.bmSound) window.bmSound.playType();
+                                loadStage(ch.next);
+                            };
+                            choicesEl.appendChild(btn);
+                        });
+
+                        let timeLeft = 100;
+                        timerFill.style.width = "100%";
+                        questTimer = setInterval(() => {
+                            timeLeft -= 1.25;
+                            timerFill.style.width = Math.max(0, timeLeft) + "%";
+                            if (timeLeft <= 0) {
+                                clearInterval(questTimer);
+                                loadStage(st.choices[0].next);
+                            }
+                        }, 100);
+                    });
+                }
+                loadStage(0);
+            }
+
+            function runCommand(key) {
+                if (isTyping || !commandsData[key]) return;
+                isTyping = true;
+                setButtonsDisabled(true);
+
+                const cmdEl = document.getElementById('cmd-typed');
+                const screenEl = document.getElementById('term-screen');
+                const passBox = document.getElementById('password-box');
+                const questBox = document.getElementById('quest-box');
+                const termWindow = document.getElementById('term-window');
+
+                clearInterval(questTimer);
+                questBox.classList.remove('active');
+                if (key !== 'password') passBox.classList.remove('active');
+
+                const item = commandsData[key];
+                typeWriter(cmdEl, item.cmd, 22, () => {
+                    setTimeout(() => {
+                        if (key === 'glitch') {
+                            if (window.bmSound) window.bmSound.playGlitch();
+                            termWindow.classList.add('glitch-mode');
+                            setTimeout(() => termWindow.classList.remove('glitch-mode'), 2500);
+                        }
+                        if (item.isQuest) { startQuest(); return; }
+                        if (item.isSymbol) {
+                            screenEl.innerHTML = '';
+                            const top = document.createElement('div');
+                            const pre = document.createElement('pre');
+                            pre.className = 'ascii-art-box';
+                            const bot = document.createElement('div');
+                            screenEl.append(top, pre, bot);
+                            typeWriter(top, "> ЗАГРУЗКА СИМВОЛА ВЫБОРА...", 15, () => {
+                                typeWriter(pre, symbolArt, 8, () => {
+                                    typeWriter(bot, "> ИЛЛЮЗИЯ СВОБОДЫ ВОЛИ АКТИВИРОВАНА.", 15, () => {
+                                        isTyping = false;
+                                        setButtonsDisabled(false);
+                                    });
+                                });
+                            });
+                            return;
+                        }
+
+                        const outText = item.dynamicOut ? item.dynamicOut() : item.out;
+                        typeWriter(screenEl, outText, 12, () => {
+                            isTyping = false;
+                            setButtonsDisabled(false);
+                            if (key === 'password') {
+                                passBox.classList.add('active');
+                                const inp = document.getElementById('secret-pass');
+                                inp.value = '';
+                                inp.focus();
+                            }
+                        });
+                    }, 180);
+                });
+            }
+
+            function checkPassword() {
+                const inp = document.getElementById('secret-pass');
+                const screenEl = document.getElementById('term-screen');
+                const passBox = document.getElementById('password-box');
+                const dialog = document.getElementById('win-dialog');
+
+                if (inp.value.trim() === '1111') {
+                    if (window.bmSound) window.bmSound.playError();
+                    passBox.classList.remove('active');
+                    screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.\n> ОТКРЫТИЕ ВНЕШНЕГО ОКНА...';
+                    dialog.style.left = '0px';
+                    dialog.style.top = '0px';
+                    document.getElementById('win-modal').classList.add('open');
+                } else {
+                    if (window.bmSound) window.bmSound.playGlitch();
+                    screenEl.textContent = '> ОШИБКА: НЕВЕРНЫЙ КОД ДОСТУПА [ACCESS DENIED].\n> ПОПРОБУЙТЕ СНОВА...';
+                    inp.value = '';
+                    inp.focus();
+                }
+            }
+
+            const closeWin = () => document.getElementById('win-modal').classList.remove('open');
+
+            document.getElementById('cmd-buttons-panel').addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-cmd]');
+                if (btn && !btn.disabled) runCommand(btn.getAttribute('data-cmd'));
+            });
+            document.getElementById('pass-submit-btn').addEventListener('click', checkPassword);
+            document.getElementById('secret-pass').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') checkPassword();
+            });
+            document.getElementById('win-close-x').addEventListener('click', closeWin);
+            document.getElementById('win-close-ok').addEventListener('click', closeWin);
+            document.getElementById('win-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'win-modal') closeWin();
+            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeWin(); });
+
+            // Перетаскивание окна Windows (мышь + палец)
+            const dialog = document.getElementById('win-dialog');
+            const titlebar = document.getElementById('win-titlebar');
+            let drag = false, sx = 0, sy = 0, ol = 0, ot = 0;
+
+            const startD = (x, y) => {
+                drag = true; sx = x; sy = y;
+                ol = parseFloat(dialog.style.left) || 0;
+                ot = parseFloat(dialog.style.top) || 0;
+            };
+            const moveD = (x, y) => {
+                if (!drag) return;
+                dialog.style.left = (ol + x - sx) + 'px';
+                dialog.style.top = (ot + y - sy) + 'px';
+            };
+
+            titlebar.addEventListener('mousedown', (e) => { if (!e.target.closest('#win-close-x')) startD(e.clientX, e.clientY); });
+            document.addEventListener('mousemove', (e) => moveD(e.clientX, e.clientY));
+            document.addEventListener('mouseup', () => drag = false);
+
+            titlebar.addEventListener('touchstart', (e) => {
+                if (!e.target.closest('#win-close-x')) startD(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            document.addEventListener('touchmove', (e) => {
+                if (drag) moveD(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: true });
+            document.addEventListener('touchend', () => drag = false);
+        })();
+    </script>
+</body>
+</html>
