@@ -60,7 +60,6 @@ window.bmSound = {
     }
 };
 
-// Глобальное управление социальным рейтингом
 window.getGlobalRating = function() {
     const saved = localStorage.getItem("bm_rating");
     return saved !== null ? parseFloat(saved) : 4.2;
@@ -70,29 +69,17 @@ window.updateGlobalRating = function(newScore) {
     const clamped = Math.max(0.1, Math.min(5.0, parseFloat(newScore))).toFixed(1);
     localStorage.setItem("bm_rating", clamped);
     const badge = document.getElementById("globalRatingBadge");
-    if (badge) {
-        badge.textContent = `★ ${clamped}`;
-    }
-    if (parseFloat(clamped) < 2.5) {
-        document.body.classList.add("outcast-mode");
-    } else {
-        document.body.classList.remove("outcast-mode");
-    }
+    if (badge) badge.textContent = `★ ${clamped}`;
+    document.body.classList.toggle("outcast-mode", parseFloat(clamped) < 2.5);
 };
 
 document.addEventListener("DOMContentLoaded", () => {
     const currentRating = window.getGlobalRating();
-    if (currentRating < 2.5) {
-        document.body.classList.add("outcast-mode");
-    }
+    if (currentRating < 2.5) document.body.classList.add("outcast-mode");
 
-    // Проверка состояния эффекта ЭЛТ-монитора
     let crtEnabled = localStorage.getItem("bm_crt") !== "off";
-    if (!crtEnabled) {
-        document.body.classList.add("no-crt");
-    }
+    if (!crtEnabled) document.body.classList.add("no-crt");
 
-    // 1. Автоматическая генерация меню + HUD
     const navbarContainer = document.getElementById("navbar");
     if (navbarContainer) {
         const menuItems = [
@@ -109,74 +96,52 @@ document.addEventListener("DOMContentLoaded", () => {
         ];
 
         const currentPage = window.location.pathname.split("/").pop() || "index.html";
-
         const linksHTML = menuItems.map(item => {
             const isActive = currentPage === item.url ? 'class="active"' : '';
             return `<a href="${item.url}" ${isActive}>${item.title}</a>`;
         }).join("");
-
-        const soundLabel = window.bmSound.enabled ? "SFX: ON" : "SFX: OFF";
-        const soundClass = window.bmSound.enabled ? "sound-toggle active" : "sound-toggle";
-
-        const crtLabel = crtEnabled ? "CRT: ON" : "CRT: OFF";
-        const crtClass = crtEnabled ? "sound-toggle active" : "sound-toggle";
 
         navbarContainer.innerHTML = `
             <nav>
                 <div class="nav-brand-group">
                     <a href="index.html" class="logo">Black Mirror // RU</a>
                     <div class="hud-controls">
-                        <a href="simulator.html" class="rating-badge" id="globalRatingBadge" title="Ваш текущий социальный рейтинг">★ ${currentRating.toFixed(1)}</a>
-                        <button type="button" class="${soundClass}" id="soundToggleBtn" title="Звуки интерфейса">${soundLabel}</button>
-                        <button type="button" class="${crtClass}" id="crtToggleBtn" title="Эффект ЭЛТ-монитора">${crtLabel}</button>
+                        <a href="simulator.html" class="rating-badge" id="globalRatingBadge">★ ${currentRating.toFixed(1)}</a>
+                        <button type="button" class="sound-toggle ${window.bmSound.enabled ? 'active' : ''}" id="soundToggleBtn">${window.bmSound.enabled ? 'SFX: ON' : 'SFX: OFF'}</button>
+                        <button type="button" class="sound-toggle ${crtEnabled ? 'active' : ''}" id="crtToggleBtn">${crtEnabled ? 'CRT: ON' : 'CRT: OFF'}</button>
                     </div>
                 </div>
                 <button class="burger-btn" id="burgerBtn" aria-label="Открыть меню">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </button>
-                <div class="nav-links" id="navLinks">
-                    ${linksHTML}
-                </div>
+                <div class="nav-links" id="navLinks">${linksHTML}</div>
             </nav>
         `;
 
-        // Переключатель звука
-        const soundBtn = document.getElementById("soundToggleBtn");
-        soundBtn.addEventListener("click", () => {
+        document.getElementById("soundToggleBtn").addEventListener("click", function() {
             window.bmSound.enabled = !window.bmSound.enabled;
             localStorage.setItem("bm_sound", window.bmSound.enabled ? "on" : "off");
-            soundBtn.textContent = window.bmSound.enabled ? "SFX: ON" : "SFX: OFF";
-            soundBtn.classList.toggle("active", window.bmSound.enabled);
-            if (window.bmSound.enabled) {
-                window.bmSound.playType();
-            }
+            this.textContent = window.bmSound.enabled ? "SFX: ON" : "SFX: OFF";
+            this.classList.toggle("active", window.bmSound.enabled);
+            if (window.bmSound.enabled) window.bmSound.playType();
         });
 
-        // Переключатель ЭЛТ-эффекта
-        const crtBtn = document.getElementById("crtToggleBtn");
-        crtBtn.addEventListener("click", () => {
+        document.getElementById("crtToggleBtn").addEventListener("click", function() {
             crtEnabled = !crtEnabled;
             localStorage.setItem("bm_crt", crtEnabled ? "on" : "off");
             document.body.classList.toggle("no-crt", !crtEnabled);
-            crtBtn.textContent = crtEnabled ? "CRT: ON" : "CRT: OFF";
-            crtBtn.classList.toggle("active", crtEnabled);
-            if (window.bmSound.enabled) {
-                window.bmSound.playType();
-            }
+            this.textContent = crtEnabled ? "CRT: ON" : "CRT: OFF";
+            this.classList.toggle("active", crtEnabled);
+            if (window.bmSound.enabled) window.bmSound.playType();
         });
 
-        // Бургер-меню для мобильных
         const burgerBtn = document.getElementById("burgerBtn");
         const navLinks = document.getElementById("navLinks");
-
         burgerBtn.addEventListener("click", () => {
             burgerBtn.classList.toggle("open");
             navLinks.classList.toggle("open");
             document.body.classList.toggle("menu-open");
         });
-
         navLinks.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", () => {
                 burgerBtn.classList.remove("open");
@@ -186,12 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 2. Плавное появление блоков при прокрутке
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-
                 if (entry.target.hasAttribute('data-typewriter') && !entry.target.dataset.typed) {
                     entry.target.dataset.typed = "true";
                     typeText(entry.target);
@@ -200,29 +163,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }, { threshold: 0.15 });
 
-    document.querySelectorAll('.reveal, .card').forEach(el => {
-        observer.observe(el);
-    });
+    document.querySelectorAll('.reveal, .card').forEach(el => observer.observe(el));
 
-    // 3. Эффект печатной машинки со звуком
     function typeText(element) {
         const fullText = element.getAttribute('data-typewriter');
         element.textContent = '';
         element.classList.add('typewriter-cursor');
-        
         let index = 0;
-        const speed = 40;
-
         const interval = setInterval(() => {
             element.textContent += fullText.charAt(index);
             if (index % 2 === 0) window.bmSound.playType();
             index++;
             if (index >= fullText.length) {
                 clearInterval(interval);
-                setTimeout(() => {
-                    element.classList.remove('typewriter-cursor');
-                }, 1500);
+                setTimeout(() => element.classList.remove('typewriter-cursor'), 1500);
             }
-        }, speed);
+        }, 40);
     }
 });
