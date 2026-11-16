@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Автоматическая генерация единого меню
+    // 1. Автоматическая генерация единого адаптивного меню
     const navbarContainer = document.getElementById("navbar");
     if (navbarContainer) {
-            const menuItems = [
+        const menuItems = [
             { title: "Главная", url: "index.html" },
             { title: "По-русски", url: "russian-project.html" },
             { title: "Антиутопии", url: "about.html" },
@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
             { title: "Об ИИ", url: "ai.html" }
         ];
 
-
         const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
         const linksHTML = menuItems.map(item => {
@@ -26,11 +25,35 @@ document.addEventListener("DOMContentLoaded", () => {
         navbarContainer.innerHTML = `
             <nav>
                 <a href="index.html" class="logo">Black Mirror // RU</a>
-                <div class="nav-links" style="flex-wrap: wrap; justify-content: center;">
+                <button class="burger-btn" id="burgerBtn" aria-label="Открыть меню">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-links" id="navLinks">
                     ${linksHTML}
                 </div>
             </nav>
         `;
+
+        // Логика открытия/закрытия мобильного меню
+        const burgerBtn = document.getElementById("burgerBtn");
+        const navLinks = document.getElementById("navLinks");
+
+        burgerBtn.addEventListener("click", () => {
+            burgerBtn.classList.toggle("open");
+            navLinks.classList.toggle("open");
+            document.body.classList.toggle("menu-open");
+        });
+
+        // Закрывать меню при клике на любую ссылку
+        navLinks.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", () => {
+                burgerBtn.classList.remove("open");
+                navLinks.classList.remove("open");
+                document.body.classList.remove("menu-open");
+            });
+        });
     }
 
     // 2. Плавное появление блоков при прокрутке
@@ -45,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
-    }, { threshold: 0.25 });
+    }, { threshold: 0.15 }); // Снизили порог для маленьких экранов телефонов
 
     document.querySelectorAll('.reveal, .card').forEach(el => {
         observer.observe(el);
@@ -58,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         element.classList.add('typewriter-cursor');
         
         let index = 0;
-        const speed = 45;
+        const speed = 40;
 
         const interval = setInterval(() => {
             element.textContent += fullText.charAt(index);
