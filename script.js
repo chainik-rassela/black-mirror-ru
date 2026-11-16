@@ -60,7 +60,7 @@ window.bmSound = {
     }
 };
 
-// Глобальный счётчик социального рейтинга
+// Глобальное управление социальным рейтингом
 window.getGlobalRating = function() {
     const saved = localStorage.getItem("bm_rating");
     return saved !== null ? parseFloat(saved) : 4.2;
@@ -86,7 +86,13 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add("outcast-mode");
     }
 
-    // 1. Автоматическая генерация меню + индикатор рейтинга + кнопка звука
+    // Проверка состояния эффекта ЭЛТ-монитора
+    let crtEnabled = localStorage.getItem("bm_crt") !== "off";
+    if (!crtEnabled) {
+        document.body.classList.add("no-crt");
+    }
+
+    // 1. Автоматическая генерация меню + HUD
     const navbarContainer = document.getElementById("navbar");
     if (navbarContainer) {
         const menuItems = [
@@ -112,13 +118,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const soundLabel = window.bmSound.enabled ? "SFX: ON" : "SFX: OFF";
         const soundClass = window.bmSound.enabled ? "sound-toggle active" : "sound-toggle";
 
+        const crtLabel = crtEnabled ? "CRT: ON" : "CRT: OFF";
+        const crtClass = crtEnabled ? "sound-toggle active" : "sound-toggle";
+
         navbarContainer.innerHTML = `
             <nav>
                 <div class="nav-brand-group">
                     <a href="index.html" class="logo">Black Mirror // RU</a>
                     <div class="hud-controls">
                         <a href="simulator.html" class="rating-badge" id="globalRatingBadge" title="Ваш текущий социальный рейтинг">★ ${currentRating.toFixed(1)}</a>
-                        <button type="button" class="${soundClass}" id="soundToggleBtn" title="Включить или выключить звуки интерфейса">${soundLabel}</button>
+                        <button type="button" class="${soundClass}" id="soundToggleBtn" title="Звуки интерфейса">${soundLabel}</button>
+                        <button type="button" class="${crtClass}" id="crtToggleBtn" title="Эффект ЭЛТ-монитора">${crtLabel}</button>
                     </div>
                 </div>
                 <button class="burger-btn" id="burgerBtn" aria-label="Открыть меню">
@@ -132,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </nav>
         `;
 
+        // Переключатель звука
         const soundBtn = document.getElementById("soundToggleBtn");
         soundBtn.addEventListener("click", () => {
             window.bmSound.enabled = !window.bmSound.enabled;
@@ -143,6 +154,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
+        // Переключатель ЭЛТ-эффекта
+        const crtBtn = document.getElementById("crtToggleBtn");
+        crtBtn.addEventListener("click", () => {
+            crtEnabled = !crtEnabled;
+            localStorage.setItem("bm_crt", crtEnabled ? "on" : "off");
+            document.body.classList.toggle("no-crt", !crtEnabled);
+            crtBtn.textContent = crtEnabled ? "CRT: ON" : "CRT: OFF";
+            crtBtn.classList.toggle("active", crtEnabled);
+            if (window.bmSound.enabled) {
+                window.bmSound.playType();
+            }
+        });
+
+        // Бургер-меню для мобильных
         const burgerBtn = document.getElementById("burgerBtn");
         const navLinks = document.getElementById("navLinks");
 
