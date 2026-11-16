@@ -157,9 +157,9 @@ nav {
     text-shadow: 0 0 12px var(--accent-glow);
 }
 
-/* Бургер-меню */
+/* Бургер-меню: ЖЁСТКО СКРЫТО на десктопе */
 .burger-btn {
-    display: none;
+    display: none !important;
     flex-direction: column;
     justify-content: space-between;
     width: 26px;
@@ -404,14 +404,14 @@ nav {
     box-shadow: 0 0 25px var(--accent-glow);
 }
 
-/* Адаптация под планшеты и телефоны */
-@media (max-width: 1040px) {
+/* Адаптация: бургер-меню включается ТОЛЬКО на планшетах и телефонах */
+@media (max-width: 960px) {
     nav {
         padding: 0.9rem 1.2rem;
     }
 
     .burger-btn {
-        display: flex;
+        display: flex !important;
     }
 
     .nav-links {
