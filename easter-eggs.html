@@ -5,6 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Единая вселенная и пасхалки</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .museum-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 0.9rem;
+            margin-top: 1.2rem;
+        }
+        .museum-item {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .museum-item:hover {
+            border-color: var(--accent-dim);
+            background: #181c20;
+            transform: translateY(-2px);
+        }
+        .museum-item.active {
+            border-color: var(--accent);
+            background: #191f24;
+            box-shadow: 0 0 15px var(--accent-dim);
+        }
+        .museum-code {
+            color: var(--accent);
+            font-family: "Courier New", monospace;
+            font-size: 0.78rem;
+        }
+        .museum-title {
+            display: block;
+            color: #fff;
+            margin-top: 0.3rem;
+            font-size: 1.02rem;
+        }
+        .museum-scanner-out {
+            margin-top: 1.2rem;
+            padding: 1.1rem;
+            background: #07090b;
+            border: 1px dashed var(--accent-dim);
+            border-radius: 8px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+            min-height: 90px;
+            line-height: 1.55;
+        }
+    </style>
 </head>
 <body>
 
@@ -35,9 +84,59 @@
             <p>А если внимательно читать бегущие строки новостей в выпусках разных лет, можно отследить судьбы героев из других эпизодов.</p>
         </div>
 
+        <div class="card">
+            <span class="tag">Интерактивный архив • Нажмите на экспонат</span>
+            <h2>Рентген-сканер «Чёрного музея»</h2>
+            <p>Выберите конфискованный артефакт из хранилища Роло Хейнса, чтобы запустить внутреннее сканирование и прочитать протокол угрозы.</p>
+
+            <div class="museum-grid" id="museum-grid">
+                <div class="museum-item" data-code="OBJ-01 // ЗЕРНО" data-threat="ВЫСОКИЙ" data-info="Миниатюрный имплант за ухом (эпизод «История всей твоей жизни»). Непрерывно записывает аудиовизуальный поток через зрительный нерв без возможности полного удаления из облачного бэкапа.">
+                    <div class="museum-code">[ЭКСПОНАТ #01]</div>
+                    <strong class="museum-title">Чип памяти «Зерно»</strong>
+                </div>
+
+                <div class="museum-item" data-code="OBJ-02 // АРКАНГЕЛ" data-threat="КРИТИЧЕСКИЙ" data-info="Система родительского нейроконтроля (эпизод «Аркангел»). Транслирует видеопоток из глаз носителя на планшет и накладывает пиксельный фильтр на любые источники стресса.">
+                    <div class="museum-code">[ЭКСПОНАТ #02]</div>
+                    <strong class="museum-title">Планшет «Аркангел»</strong>
+                </div>
+
+                <div class="museum-item" data-code="OBJ-03 // ДРОН ADI" data-threat="ЭКСТРЕМАЛЬНЫЙ" data-info="Автономная робопчела-опылитель (эпизод «Враг народа»). Перепрограммирована для поиска целей по биометрии лица и ликвидации по хэштегам в социальных сетях.">
+                    <div class="museum-code">[ЭКСПОНАТ #03]</div>
+                    <strong class="museum-title">Робопчела ADI</strong>
+                </div>
+
+                <div class="museum-item" data-code="OBJ-04 // ПЕРЕДАТЧИК" data-threat="СИСТЕМНЫЙ" data-info="Ретранслятор сигнала «Белый медведь». Подавляет волю наблюдателей через мобильные экраны и ежедневно стирает память объекта после завершения цикла наказания.">
+                    <div class="museum-code">[ЭКСПОНАТ #04]</div>
+                    <strong class="museum-title">Маяк «Белый медведь»</strong>
+                </div>
+            </div>
+
+            <div class="museum-scanner-out" id="museum-scanner-out">
+                &gt; СКАНЕР В РЕЖИМЕ ОЖИДАНИЯ.<br>
+                &gt; ВЫБЕРИТЕ ЛЮБОЙ АРТЕФАКТ ВЫШЕ ДЛЯ ЗАПУСКА РЕНТГЕН-АНАЛИЗА...
+            </div>
+        </div>
+
         <a href="terminal.html" class="btn">Открыть секретный терминал →</a>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        document.querySelectorAll('.museum-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.bmSound) window.bmSound.playType();
+                document.querySelectorAll('.museum-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+
+                const code = item.getAttribute('data-code');
+                const threat = item.getAttribute('data-threat');
+                const info = item.getAttribute('data-info');
+
+                document.getElementById('museum-scanner-out').innerHTML =
+                    `&gt; ИДЕНТИФИКАЦИЯ: <strong>${code}</strong> // УРОВЕНЬ УГРОЗЫ: <strong>${threat}</strong><br>` +
+                    `&gt; ДОСЬЕ: ${info}`;
+            });
+        });
+    </script>
 </body>
 </html>
