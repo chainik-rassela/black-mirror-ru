@@ -482,10 +482,21 @@ nav {
         bottom: 18px;
     }
 }
-/* Принудительное отключение эффекта ЭЛТ-монитора */
-body.no-crt::before,
-body.no-crt::after {
+/* Отключаем старые псевдоэлементы навсегда */
+body::before,
+body::after {
     display: none !important;
     content: none !important;
 }
 
+/* Новый управляемый слой ЭЛТ-монитора */
+#crt-overlay {
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle, transparent 62%, rgba(0, 0, 0, 0.72) 100%),
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%);
+    background-size: 100% 100%, 100% 4px;
+    z-index: 9990;
+    pointer-events: none;
+}

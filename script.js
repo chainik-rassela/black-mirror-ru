@@ -1,4 +1,3 @@
-// Глобальный звуковой движок (Web Audio API без внешних файлов)
 window.bmSound = {
     enabled: localStorage.getItem("bm_sound") === "on",
     ctx: null,
@@ -77,8 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentRating = window.getGlobalRating();
     if (currentRating < 2.5) document.body.classList.add("outcast-mode");
 
+    // Создаём реальный слой ЭЛТ-монитора
     let crtEnabled = localStorage.getItem("bm_crt") !== "off";
-    if (!crtEnabled) document.body.classList.add("no-crt");
+    const crtOverlay = document.createElement("div");
+    crtOverlay.id = "crt-overlay";
+    crtOverlay.style.display = crtEnabled ? "block" : "none";
+    document.body.appendChild(crtOverlay);
 
     const navbarContainer = document.getElementById("navbar");
     if (navbarContainer) {
@@ -129,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("crtToggleBtn").addEventListener("click", function() {
             crtEnabled = !crtEnabled;
             localStorage.setItem("bm_crt", crtEnabled ? "on" : "off");
-            document.body.classList.toggle("no-crt", !crtEnabled);
+            crtOverlay.style.display = crtEnabled ? "block" : "none";
             this.textContent = crtEnabled ? "CRT: ON" : "CRT: OFF";
             this.classList.toggle("active", crtEnabled);
             if (window.bmSound.enabled) window.bmSound.playType();
