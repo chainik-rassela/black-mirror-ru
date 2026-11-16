@@ -482,3 +482,10 @@ nav {
         bottom: 18px;
     }
 }
+/* Принудительное отключение эффекта ЭЛТ-монитора */
+body.no-crt::before,
+body.no-crt::after {
+    display: none !important;
+    content: none !important;
+}
+
