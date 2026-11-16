@@ -1,5 +1,92 @@
+// Глобальный звуковой движок (Web Audio API без внешних файлов)
+window.bmSound = {
+    enabled: localStorage.getItem("bm_sound") === "on",
+    ctx: null,
+    init() {
+        if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+            this.ctx.resume();
+        }
+    },
+    playType() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(600 + Math.random() * 250, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.035, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.035);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.035);
+    },
+    playGlitch() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(110, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(42, this.ctx.currentTime + 0.35);
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.35);
+    },
+    playError() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(165, this.ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.07, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.32);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.32);
+    }
+};
+
+// Глобальный счётчик социального рейтинга
+window.getGlobalRating = function() {
+    const saved = localStorage.getItem("bm_rating");
+    return saved !== null ? parseFloat(saved) : 4.2;
+};
+
+window.updateGlobalRating = function(newScore) {
+    const clamped = Math.max(0.1, Math.min(5.0, parseFloat(newScore))).toFixed(1);
+    localStorage.setItem("bm_rating", clamped);
+    const badge = document.getElementById("globalRatingBadge");
+    if (badge) {
+        badge.textContent = `★ ${clamped}`;
+    }
+    if (parseFloat(clamped) < 2.5) {
+        document.body.classList.add("outcast-mode");
+    } else {
+        document.body.classList.remove("outcast-mode");
+    }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Автоматическая генерация единого адаптивного меню
+    const currentRating = window.getGlobalRating();
+    if (currentRating < 2.5) {
+        document.body.classList.add("outcast-mode");
+    }
+
+    // 1. Автоматическая генерация меню + индикатор рейтинга + кнопка звука
     const navbarContainer = document.getElementById("navbar");
     if (navbarContainer) {
         const menuItems = [
@@ -22,9 +109,18 @@ document.addEventListener("DOMContentLoaded", () => {
             return `<a href="${item.url}" ${isActive}>${item.title}</a>`;
         }).join("");
 
+        const soundLabel = window.bmSound.enabled ? "SFX: ON" : "SFX: OFF";
+        const soundClass = window.bmSound.enabled ? "sound-toggle active" : "sound-toggle";
+
         navbarContainer.innerHTML = `
             <nav>
-                <a href="index.html" class="logo">Black Mirror // RU</a>
+                <div class="nav-brand-group">
+                    <a href="index.html" class="logo">Black Mirror // RU</a>
+                    <div class="hud-controls">
+                        <a href="simulator.html" class="rating-badge" id="globalRatingBadge" title="Ваш текущий социальный рейтинг">★ ${currentRating.toFixed(1)}</a>
+                        <button type="button" class="${soundClass}" id="soundToggleBtn" title="Включить или выключить звуки интерфейса">${soundLabel}</button>
+                    </div>
+                </div>
                 <button class="burger-btn" id="burgerBtn" aria-label="Открыть меню">
                     <span></span>
                     <span></span>
@@ -36,7 +132,17 @@ document.addEventListener("DOMContentLoaded", () => {
             </nav>
         `;
 
-        // Логика открытия/закрытия мобильного меню
+        const soundBtn = document.getElementById("soundToggleBtn");
+        soundBtn.addEventListener("click", () => {
+            window.bmSound.enabled = !window.bmSound.enabled;
+            localStorage.setItem("bm_sound", window.bmSound.enabled ? "on" : "off");
+            soundBtn.textContent = window.bmSound.enabled ? "SFX: ON" : "SFX: OFF";
+            soundBtn.classList.toggle("active", window.bmSound.enabled);
+            if (window.bmSound.enabled) {
+                window.bmSound.playType();
+            }
+        });
+
         const burgerBtn = document.getElementById("burgerBtn");
         const navLinks = document.getElementById("navLinks");
 
@@ -46,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.toggle("menu-open");
         });
 
-        // Закрывать меню при клике на любую ссылку
         navLinks.querySelectorAll("a").forEach(link => {
             link.addEventListener("click", () => {
                 burgerBtn.classList.remove("open");
@@ -68,13 +173,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
-    }, { threshold: 0.15 }); // Снизили порог для маленьких экранов телефонов
+    }, { threshold: 0.15 });
 
     document.querySelectorAll('.reveal, .card').forEach(el => {
         observer.observe(el);
     });
 
-    // 3. Эффект печатной машинки
+    // 3. Эффект печатной машинки со звуком
     function typeText(element) {
         const fullText = element.getAttribute('data-typewriter');
         element.textContent = '';
@@ -85,6 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const interval = setInterval(() => {
             element.textContent += fullText.charAt(index);
+            if (index % 2 === 0) window.bmSound.playType();
             index++;
             if (index >= fullText.length) {
                 clearInterval(interval);
