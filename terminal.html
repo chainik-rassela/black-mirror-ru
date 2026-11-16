@@ -45,10 +45,12 @@
             margin-bottom: 1.2rem;
             font-size: 0.8rem;
             color: #667;
+            gap: 0.5rem;
         }
         .terminal-dots {
             display: flex;
             gap: 6px;
+            flex-shrink: 0;
         }
         .terminal-dots span {
             width: 10px;
@@ -72,6 +74,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 0.5rem;
+            word-break: break-all;
         }
         .cmd-prompt {
             color: #00e5ff;
@@ -129,7 +132,7 @@
             padding: 0.5rem 0.8rem;
             border-radius: 4px;
             font-family: "Courier New", Courier, monospace;
-            font-size: 0.95rem;
+            font-size: 1rem;
             outline: none;
             width: 150px;
             letter-spacing: 2px;
@@ -216,7 +219,7 @@
         .win-titlebar {
             background: linear-gradient(90deg, #000080, #1084d0);
             color: #fff;
-            padding: 5px 7px;
+            padding: 6px 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -224,6 +227,7 @@
             font-size: 0.85rem;
             user-select: none;
             cursor: grab;
+            touch-action: none;
         }
         .win-titlebar:active {
             cursor: grabbing;
@@ -240,14 +244,15 @@
             border-left: 1px solid #fff;
             border-right: 1px solid #404040;
             border-bottom: 1px solid #404040;
-            width: 20px;
-            height: 18px;
+            width: 22px;
+            height: 20px;
             font-size: 12px;
             font-weight: bold;
-            line-height: 14px;
+            line-height: 16px;
             text-align: center;
             cursor: pointer;
             padding: 0;
+            flex-shrink: 0;
         }
         .win-body {
             padding: 1.4rem 1.2rem 1rem;
@@ -294,14 +299,75 @@
         .win-ok-btn {
             background: #c0c0c0;
             color: #000;
-            padding: 4px 28px;
+            padding: 6px 32px;
             font-family: "Tahoma", "Segoe UI", Arial, sans-serif;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             border-top: 2px solid #ffffff;
             border-left: 2px solid #ffffff;
             border-right: 2px solid #404040;
             border-bottom: 2px solid #404040;
             cursor: pointer;
+        }
+
+        /* =========================================
+           МОБИЛЬНАЯ АДАПТАЦИЯ ТЕРМИНАЛА
+           ========================================= */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 5.8rem;
+            }
+            .terminal-window {
+                padding: 1.1rem;
+                border-radius: 10px;
+            }
+            .terminal-header {
+                font-size: 0.72rem;
+                padding-bottom: 0.6rem;
+                margin-bottom: 0.9rem;
+            }
+            .cmd-line-bar {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.82rem;
+                margin-bottom: 1rem;
+            }
+            .terminal-output {
+                min-height: 170px;
+                font-size: 0.86rem;
+                line-height: 1.55;
+                margin-bottom: 1.2rem;
+            }
+            .password-box {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0.9rem;
+            }
+            .password-input {
+                width: 100%;
+                font-size: 16px;
+                padding: 0.7rem;
+            }
+            .password-box .cmd-btn {
+                width: 100%;
+                text-align: center;
+                padding: 0.8rem;
+            }
+            .cmd-buttons {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+            }
+            .cmd-btn {
+                width: 100%;
+                text-align: left;
+                padding: 0.85rem 1rem;
+                font-size: 0.85rem;
+            }
+            .win-titlebar {
+                font-size: 0.78rem;
+            }
+            .win-body {
+                padding: 1.1rem 1rem 0.8rem;
+            }
         }
     </style>
 </head>
@@ -332,7 +398,7 @@
 
             <div class="password-box" id="password-box">
                 <label for="secret-pass">&gt; ВВЕДИТЕ КОД ДОСТУПА:</label>
-                <input type="password" id="secret-pass" class="password-input" placeholder="******" maxlength="12">
+                <input type="password" id="secret-pass" class="password-input" placeholder="****" maxlength="12">
                 <button type="button" class="cmd-btn secret" id="pass-submit-btn">ВВОД</button>
             </div>
 
@@ -529,7 +595,7 @@
                 const dialog = document.getElementById('win-dialog');
                 const val = input.value.trim();
 
-                if (val === '111126') {
+                if (val === '1111') {
                     passBox.classList.remove('active');
                     screenEl.textContent = '> КОД ПОДТВЕРЖДЁН.\n> ОТКРЫТИЕ ВНЕШНЕГО ОКНА...';
                     dialog.style.left = '0px';
@@ -546,7 +612,6 @@
                 document.getElementById('win-modal').classList.remove('open');
             }
 
-            // Делегирование клика по панели кнопок (работает всегда и мгновенно)
             const panel = document.getElementById('cmd-buttons-panel');
             if (panel) {
                 panel.addEventListener('click', function(e) {
@@ -588,29 +653,53 @@
                 if (e.key === 'Escape') closeWinModal();
             });
 
-            // Перетаскивание окна Windows
+            // Перетаскивание окна Windows (мышь + сенсорный экран)
             const dialog = document.getElementById('win-dialog');
             const titlebar = document.getElementById('win-titlebar');
             let isDragging = false;
             let startX = 0, startY = 0, origLeft = 0, origTop = 0;
 
+            function startDrag(clientX, clientY) {
+                isDragging = true;
+                startX = clientX;
+                startY = clientY;
+                origLeft = parseFloat(dialog.style.left) || 0;
+                origTop = parseFloat(dialog.style.top) || 0;
+            }
+
+            function moveDrag(clientX, clientY) {
+                if (!isDragging) return;
+                dialog.style.left = (origLeft + clientX - startX) + 'px';
+                dialog.style.top = (origTop + clientY - startY) + 'px';
+            }
+
             if (titlebar && dialog) {
                 titlebar.addEventListener('mousedown', function(e) {
                     if (e.target.closest('#win-close-x')) return;
-                    isDragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    origLeft = parseFloat(dialog.style.left) || 0;
-                    origTop = parseFloat(dialog.style.top) || 0;
+                    startDrag(e.clientX, e.clientY);
                 });
 
                 document.addEventListener('mousemove', function(e) {
-                    if (!isDragging) return;
-                    dialog.style.left = (origLeft + e.clientX - startX) + 'px';
-                    dialog.style.top = (origTop + e.clientY - startY) + 'px';
+                    moveDrag(e.clientX, e.clientY);
                 });
 
                 document.addEventListener('mouseup', function() {
+                    isDragging = false;
+                });
+
+                titlebar.addEventListener('touchstart', function(e) {
+                    if (e.target.closest('#win-close-x')) return;
+                    const touch = e.touches[0];
+                    startDrag(touch.clientX, touch.clientY);
+                }, { passive: true });
+
+                document.addEventListener('touchmove', function(e) {
+                    if (!isDragging) return;
+                    const touch = e.touches[0];
+                    moveDrag(touch.clientX, touch.clientY);
+                }, { passive: true });
+
+                document.addEventListener('touchend', function() {
                     isDragging = false;
                 });
             }
